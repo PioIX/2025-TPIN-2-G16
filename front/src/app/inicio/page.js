@@ -48,8 +48,7 @@ export default function MenuPrincipal() {
               El objetivo del juego es preparar y entregar hamburguesas correctamente y a tiempo para satisfacer a los clientes y ganar puntos. 
               A medida que avanzan los días, los pedidos serán más numerosos y complejos, poniendo a prueba tu rapidez y memoria.
               El jugador que entregue las hamburguesas más rápido y correctamente acumulará más puntos y podrá subir en el ranking global y semanal.
-              Al final de cada jornada, verás tu puntaje total, ganancias y posición respecto a otros jugadores.
-              Se espera respeto entre los jugadores y juego limpio.
+              Al final de cada jornada, verás tu puntaje total y posición respecto a otros jugadores.
               El éxito depende de tu velocidad, precisión y estrategia.
             </p>
             <button className={styles.closeButton} onClick={toggleReglas}>
