@@ -40,7 +40,7 @@ export default function RegistroYLogin() {
       console.log("Respuesta del servidor:", result);
       if (result.validar === true) {
         sessionStorage.setItem("playerId", result.id);
-        router.push("/menu");
+        router.push("/inicio"); 
       } else {
         showModal("Error", result.message || "Credenciales incorrectas");
       }
@@ -74,7 +74,14 @@ export default function RegistroYLogin() {
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
-        setTimeout(() => setModo("login"), 1000);
+        // Guardar el ID si el servidor lo devuelve
+        if (result.id) {
+          sessionStorage.setItem("playerId", result.id);
+        }
+        // Redirigir a /inicio después de un breve delay
+        setTimeout(() => {
+          router.push("/inicio");
+        }, 1000);
       } else {
         showModal("Error", result.message || "No se pudo registrar el usuario");
       }
@@ -143,7 +150,7 @@ export default function RegistroYLogin() {
                 />
                 <Input
                   type="email"
-                  placeholder="Mail"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   page="login"

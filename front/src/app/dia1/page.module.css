@@ -1,0 +1,138 @@
+.body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Contenedor principal */
+.container {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Canvas */
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Bocadillo de diálogo */
+.dialogBubble {
+  position: absolute;
+  top: 15%;
+  left: 250px;
+  background: white;
+  border: 3px solid #333;
+  border-radius: 20px;
+  padding: 20px 30px;
+  max-width: 350px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  animation: bounceIn 0.5s ease-out;
+  z-index: 10;
+}
+
+.dialogContent {
+  text-align: center;
+}
+
+.clientName {
+  font-size: 24px;
+  font-weight: bold;
+  color: #d32f2f;
+  margin-bottom: 10px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.orderText {
+  font-size: 18px;
+  color: #333;
+  line-height: 1.5;
+  font-family: Arial, sans-serif;
+}
+
+/* Flecha del bocadillo */
+.bubbleArrow {
+  position: absolute;
+  bottom: -15px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 15px solid white;
+}
+
+.bubbleArrow::before {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: -17px;
+  width: 0;
+  height: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+  border-top: 17px solid #333;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-20px);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialogBubble {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 20%;
+    max-width: 80%;
+  }
+  
+  .clientName {
+    font-size: 20px;
+  }
+  
+  .orderText {
+    font-size: 16px;
+  }
+}
+
+
