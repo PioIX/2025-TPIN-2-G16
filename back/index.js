@@ -11,8 +11,13 @@ var port = process.env.PORT || 4000; //Ejecuto el servidor en el puerto 3000
 
 // Convierte una petición recibida (POST-GET...) a objeto JSON
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // o el puerto donde corre tu Next.js
+  credentials: true
+}));
+
+// Para parsear JSON
+app.use(express.json());
 
 const server = app.listen(port, function () {
 console.log(`Server running in http://localhost:${port}`);
@@ -224,7 +229,7 @@ app.post('/loginUsuario', async function (req, res) {
 console.log("Resultado de búsqueda:", req.body);
 try {
 const result = await realizarQuery(`
-SELECT * FROM Jugadores WHERE email = "${req.body.email}" AND contraseña = "${req.body.contraseña}";
+SELECT * FROM Jugadores WHERE nombre_usuario = "${req.body.nombre_usuario}" AND contraseña = "${req.body.contraseña}";
 `);
 if(result.length > 0){
 res.send({validar: true, id: result[0].id_jugador})
@@ -237,26 +242,65 @@ res.status(500).send({error: "No se pudo buscar el usuario"});
 }
 });
 
-app.post('/registroUsuario', async function (req,res) {
-console.log(req.body)
-try{
-const existingJugador = await realizarQuery(`
-SELECT * FROM Jugadores WHERE email = "${req.body.email}";
-`);
-if (existingJugador.length > 0) {
-res.send({ res: false, message: "Ya existe un usuario con este email" });
-return;
-}
-const insertResult = await realizarQuery(`
-INSERT INTO Jugadores (username, email, contraseña)
-VALUES ("${req.body.username}", "${req.body.email}", "${req.body.contraseña}");
-`);
-console.log("Usuario registrado:", insertResult);
-res.send({ res: true, message: "Usuario registrado correctamente" });
-} catch(error){
-console.log("Error al ingresar",error)
-}
-})
+app.post('/registroUsuario', async function (req, res) {
+  console.log(req.body);
+  try {
+    // Verificar si el email ya existe
+    const existingJugador = await realizarQuery(`
+      SELECT * FROM Jugadores WHERE email = "${req.body.email}";
+    `);
+    if (existingJugador.length > 0) {
+      return res.send({ res: false, message: "Ya existe un usuario con este email" });
+    }
+    // Insertar el nuevo usuario
+    const insertResult = await realizarQuery(`
+      INSERT INTO Jugadores (nombre_usuario, email, contraseña)
+      VALUES ("${req.body.nombre_usuario}", "${req.body.email}", "${req.body.contraseña}");
+    `);
+    console.log("Usuario registrado:", insertResult);
+    // Obtener el id_jugador del usuario recién creado
+    const id_jugador = insertResult.insertId;
+    // Devolver respuesta exitosa con el id_jugador
+    res.send({ 
+      res: true, 
+      message: "Usuario registrado correctamente",
+      id: id_jugador  // Lo devolvemos como 'id' para mantener consistencia con el login
+    });
+  } catch(error) {
+    console.log("Error al registrar:", error);
+    res.status(500).send({ 
+      res: false, 
+      message: "Error en el servidor al registrar usuario" 
+    });
+  }
+});
+
+app.post('/obtenerPedidoCliente', async function (req, res) {
+  console.log("Buscando pedido del cliente:", req.body.id_cliente);
+  try {
+    const result = await realizarQuery(`
+      SELECT id_cliente, nombre, personaje, pedido 
+      FROM Clientes 
+      WHERE id_cliente = ${req.body.id_cliente};
+    `);
+    
+    if(result.length > 0){
+      res.send({
+        validar: true, 
+        pedido: result[0].pedido,
+        cliente: result[0]
+      });
+    } else {
+      res.send({
+        validar: false,
+        mensaje: "Cliente no encontrado"
+      });
+    }
+  } catch (error) {
+    console.log("Error al obtener pedido del cliente:", error);
+    res.status(500).send({error: "No se pudo obtener el pedido"});
+  }
+});
 
 io.on("connection", (socket) => {
 const req = socket.request;
