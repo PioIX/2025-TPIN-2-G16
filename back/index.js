@@ -44,6 +44,182 @@ message: 'GET Home route working fine!'
 });
 });
 
+app.get('/jugadores', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM Jugadores WHERE id_jugador=${req.query.id_jugador}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM Jugadores");
+}
+res.send(respuesta);
+})
+
+app.get('/clientes', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM Clientes WHERE id_cliente=${req.query.id_cliente}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM Clientes");
+}
+res.send(respuesta);
+})
+
+app.get('/juegos', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM Juegos WHERE id_juego=${req.query.id_juego}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM Juegos");
+}
+res.send(respuesta);
+})
+
+app.get('/jugadoresjuego', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM JuegadoresJuego WHERE id_jugadoresjuego=${req.query.id_jugadoresjuego}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM JuegadoresJuego");
+}
+res.send(respuesta);
+})
+
+app.get('/resultadoxjugador', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM ResultadoxJugador WHERE id_jresultadoxjugador=${req.query.id_jresultadoxjugador}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM ResultadoxJugador");
+}
+res.send(respuesta);
+})
+
+app.get('/hamburguesas', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM Hamburguesas WHERE id_hamburguesa=${req.query.id_hamburguesa}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM Hamburguesas");
+}
+res.send(respuesta);
+})
+
+app.get('/calidadhamburguesa', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM Hamburguesas WHERE id_calidadhamburguesa=${req.query.id_calidadhamburguesa}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM Hamburguesas");
+}
+res.send(respuesta);
+})
+
+app.get('/clientexjuego', async function (req, res) {
+let respuesta;
+if (req.query.id_user != undefined) {
+respuesta = await realizarQuery(`SELECT * FROM ClientexJuego WHERE id_clientexjuego=${req.query.id_clientexjuego}`)
+} else {
+respuesta = await realizarQuery("SELECT * FROM ClientexJuego");
+}
+res.send(respuesta);
+})
+
+app.post('/jugadores', async function (req, res) {
+    try{
+        console.log(req.body);
+        const jugador = await realizarQuery(`
+        INSERT INTO Jugadores (nombre_usuario, email, contraseña,) VALUES
+        ('${req.body.nombre_usuario}', '${req.body.email}', '${req.body.contraseña}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/clientes', async function (req, res) {
+    try{
+        console.log(req.body);
+        const cliente = await realizarQuery(`
+        INSERT INTO Clientes (nombre, personaje, pedido,) VALUES
+        ('${req.body.nombre}', '${req.body.personaje}', '${req.body.pedido}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/juegos', async function (req, res) {
+    try{
+        console.log(req.body);
+        const juego = await realizarQuery(`
+        INSERT INTO Juegos (codigo, dia) VALUES
+        ('${req.body.codigo}', '${req.body.dia}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/jugadoresjuego', async function (req, res) {
+    try{
+        console.log(req.body);
+        const jugadorjuego = await realizarQuery(`
+        INSERT INTO JugadoresJuego (id_jugador, id_juego, id_resultado,) VALUES
+        ('${req.body.id_jugador}', '${req.body.id_juego}', '${req.body.id_resultado}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/resultadoxjugador', async function (req, res) {
+    try{
+        console.log(req.body);
+        const resultadoxjugador = await realizarQuery(`
+        INSERT INTO ResultadoxJugador (tiempo, puntos, id_jugador, id_juego) VALUES
+        ('${req.body.tiempo}', '${req.body.puntos}', '${req.body.id_jugador}', '${req.body.id_juego}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/hamburguesas', async function (req, res) {
+    try{
+        console.log(req.body);
+        const hamburguesa = await realizarQuery(`
+        INSERT INTO Hamburguesas (tipo, ingrediente1, ingrediente2, ingrediente3) VALUES
+        ('${req.body.tipo}', '${req.body.ingrediente1}', '${req.body.ingrediente2}', '${req.body.ingrediente3}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/calidadhamburguesa', async function (req, res) {
+    try{
+        console.log(req.body);
+        const calidadhamburguesa = await realizarQuery(`
+        INSERT INTO CalidadHamburguesa (id_hamburguesa, calidad, cantIngrediente1, cantIngrediente2, cantIngrediente3) VALUES
+        ('${req.body.id_hamburguesa}', '${req.body.calidad}', '${req.body.cantIngrediente1}', '${req.body.cantIngrediente1}', '${req.body.cantIngrediente1}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post('/clientexjuego', async function (req, res) {
+    try{
+        console.log(req.body);
+        const clientexjuego = await realizarQuery(`
+        INSERT INTO ClientexJuego (id_juego, id_cliente, id_hamburguesa) VALUES
+        ('${req.body.id_juego}', '${req.body.id_cliente}', '${req.body.id_hamburguesa}');
+        `);
+        } catch (error) {
+        console.error(error);
+    }
+});
+
 app.post('/loginUsuario', async function (req, res) {
 console.log("Resultado de búsqueda:", req.body);
 try {
