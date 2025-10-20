@@ -226,79 +226,137 @@ app.post('/clientexjuego', async function (req, res) {
 });
 
 app.post('/loginUsuario', async function (req, res) {
-console.log("Resultado de búsqueda:", req.body);
-try {
-const result = await realizarQuery(`
-SELECT * FROM Jugadores WHERE nombre_usuario = "${req.body.nombre_usuario}" AND contraseña = "${req.body.contraseña}";
-`);
-if(result.length > 0){
-res.send({validar: true, id: result[0].id_jugador})
-} else {
-res.send({validar: false})
-}
-} catch (error) {
-console.log("Error al buscar usuario:", error);
-res.status(500).send({error: "No se pudo buscar el usuario"});
-}
-});
-
-app.post('/registroUsuario', async function (req, res) {
-  console.log(req.body);
+  console.log("Intento de login:", req.body);
+  
   try {
-    // Verificar si el email ya existe
-    const existingJugador = await realizarQuery(`
-      SELECT * FROM Jugadores WHERE email = "${req.body.email}";
-    `);
-    if (existingJugador.length > 0) {
-      return res.send({ res: false, message: "Ya existe un usuario con este email" });
+    // Validar que lleguen los datos
+    if (!req.body.nombre_usuario || !req.body.contraseña) {
+      return res.status(400).send({
+        validar: false, 
+        message: "Debes completar todos los campos"
+      });
     }
-    // Insertar el nuevo usuario
-    const insertResult = await realizarQuery(`
-      INSERT INTO Jugadores (nombre_usuario, email, contraseña)
-      VALUES ("${req.body.nombre_usuario}", "${req.body.email}", "${req.body.contraseña}");
-    `);
-    console.log("Usuario registrado:", insertResult);
-    // Obtener el id_jugador del usuario recién creado
-    const id_jugador = insertResult.insertId;
-    // Devolver respuesta exitosa con el id_jugador
-    res.send({ 
-      res: true, 
-      message: "Usuario registrado correctamente",
-      id: id_jugador  // Lo devolvemos como 'id' para mantener consistencia con el login
-    });
-  } catch(error) {
-    console.log("Error al registrar:", error);
-    res.status(500).send({ 
-      res: false, 
-      message: "Error en el servidor al registrar usuario" 
-    });
-  }
-});
 
-app.post('/obtenerPedidoCliente', async function (req, res) {
-  console.log("Buscando pedido del cliente:", req.body.id_cliente);
-  try {
-    const result = await realizarQuery(`
-      SELECT id_cliente, nombre, personaje, pedido 
-      FROM Clientes 
-      WHERE id_cliente = ${req.body.id_cliente};
-    `);
+    // Usar prepared statements para prevenir SQL injection
+    const result = await realizarQuery(
+      'SELECT * FROM Jugadores WHERE nombre_usuario = ? AND contraseña = ?',
+      [req.body.nombre_usuario, req.body.contraseña]
+    );
     
-    if(result.length > 0){
+    if (result.length > 0) {
+      console.log("Login exitoso para:", result[0].nombre_usuario);
       res.send({
         validar: true, 
-        pedido: result[0].pedido,
-        cliente: result[0]
+        id: result[0].id_jugador,
+        nombre_usuario: result[0].nombre_usuario
       });
     } else {
       res.send({
         validar: false,
-        mensaje: "Cliente no encontrado"
+        message: "Usuario o contraseña incorrectos"
       });
     }
   } catch (error) {
-    console.log("Error al obtener pedido del cliente:", error);
-    res.status(500).send({error: "No se pudo obtener el pedido"});
+    console.error("Error al buscar usuario:", error);
+    res.status(500).send({
+      validar: false,
+      message: "Error en el servidor"
+    });
+  }
+});
+
+app.post('/registroUsuario', async function (req, res) {
+  console.log("Intento de registro:", req.body);
+  try {
+    // Validar que lleguen todos los datos
+    if (!req.body.nombre_usuario || !req.body.email || !req.body.contraseña) {
+      return res.status(400).send({
+        res: false,
+        message: "Debes completar todos los campos"
+      });
+    }
+    // Verificar si el email ya existe
+    const existingEmail = await realizarQuery(
+      'SELECT * FROM Jugadores WHERE email = ?',
+      [req.body.email]
+    );
+    if (existingEmail.length > 0) {
+      return res.send({
+        res: false,
+        message: "Ya existe un usuario con este email"
+      });
+    }
+    // Verificar si el nombre de usuario ya existe
+    const existingUsername = await realizarQuery(
+      'SELECT * FROM Jugadores WHERE nombre_usuario = ?',
+      [req.body.nombre_usuario]
+    );
+    if (existingUsername.length > 0) {
+      return res.send({
+        res: false,
+        message: "El nombre de usuario ya está en uso"
+      });
+    }
+    // Insertar el nuevo usuario con prepared statements
+    const insertResult = await realizarQuery(
+      'INSERT INTO Jugadores (nombre_usuario, email, contraseña) VALUES (?, ?, ?)',
+      [req.body.nombre_usuario, req.body.email, req.body.contraseña]
+    );
+    console.log("Usuario registrado exitosamente. ID:", insertResult.insertId);
+    res.send({
+      res: true,
+      message: "Usuario registrado correctamente",
+      id: insertResult.insertId
+    });
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    res.status(500).send({
+      res: false,
+      message: "Error en el servidor al registrar usuario"
+    });
+  }
+});
+
+app.get('/clientesPedido', async function (req, res) {
+  const clienteId = req.query.id_cliente;
+  console.log("Buscando pedido del cliente:", clienteId);
+  try {
+    let query;
+    // Si se proporciona un ID específico, buscar ese cliente
+    if (clienteId) {
+      query = `
+        SELECT id_cliente, nombre, personaje, pedido
+        FROM Clientes 
+        WHERE id_cliente = ${clienteId}
+      `;
+    } else {
+      // Si no se proporciona ID, obtener un cliente aleatorio
+      query = `
+        SELECT id_cliente, nombre, personaje, pedido
+        FROM Clientes 
+        ORDER BY RAND() 
+        LIMIT 1
+      `;
+    }
+    const result = await realizarQuery(query);
+    // Si no hay clientes en la base de datos
+    if (result.length === 0) {
+      return res.status(404).json({ 
+        error: clienteId ? 'Cliente no encontrado' : 'No hay clientes disponibles' 
+      });
+    }
+    // Enviar la respuesta con el formato esperado
+    res.json({
+      clienteNombre: result[0].nombre || '',
+      pedido: result[0].pedido || '',
+      personaje: result[0].personaje || '',
+      id_cliente: result[0].id_cliente
+    });
+  } catch (error) {
+    console.error('Error al obtener pedido:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener el pedido' 
+    });
   }
 });
 
@@ -359,3 +417,17 @@ socket.on('disconnect', () => {
 console.log("Usuario desconectado:", socket.id);
 })
 });
+
+
+// FUNCIÓN realizarQuery (asegúrate de tener esta función)
+function realizarQuery(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    conexion.query(sql, params, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+}
