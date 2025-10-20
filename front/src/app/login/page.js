@@ -18,17 +18,21 @@ export default function RegistroYLogin() {
   const showModal = (title, message) => {
     setTextoMensaje(`${title}: ${message}`);
     setMostrarMensaje(true);
+    // Auto-cerrar después de 3 segundos
+    setTimeout(() => setMostrarMensaje(false), 3000);
   };
 
   async function ingresar() {
-    if (!nombre_usuario|| !contraseña) {
+    if (!nombre_usuario || !contraseña) {
       showModal("Error", "Debes completar todos los campos");
       return;
     }
+
     const datosLogin = {
       nombre_usuario: nombre_usuario,
       contraseña: contraseña,
     };
+
     try {
       console.log(datosLogin);
       const response = await fetch("http://localhost:4000/loginUsuario", {
@@ -36,11 +40,13 @@ export default function RegistroYLogin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosLogin),
       });
+      
       const result = await response.json();
       console.log("Respuesta del servidor:", result);
+      
       if (result.validar === true) {
         sessionStorage.setItem("playerId", result.id);
-        router.push("/inicio"); 
+        router.push("/inicio");
       } else {
         showModal("Error", result.message || "Credenciales incorrectas");
       }
@@ -51,8 +57,13 @@ export default function RegistroYLogin() {
   }
 
   async function registrar() {
-    if (!nombre_usuario || !email || !contraseña) {
+    if (!nombre_usuario || !email || !contraseña || !confirmarContraseña) {
       showModal("Error", "Debes completar todos los campos");
+      return;
+    }
+
+    if (contraseña !== confirmarContraseña) {
+      showModal("Error", "Las contraseñas no coinciden");
       return;
     }
 
@@ -74,13 +85,14 @@ export default function RegistroYLogin() {
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
-        // Guardar el ID si el servidor lo devuelve
-        if (result.id) {
-          sessionStorage.setItem("playerId", result.id);
-        }
-        // Redirigir a /inicio después de un breve delay
+        // Cambiar a modo login después de 1 segundo
         setTimeout(() => {
-          router.push("/inicio");
+          setModo("login");
+          // Limpiar campos
+          setNombre_usuario("");
+          setEmail("");
+          setContraseña("");
+          setConfirmarContraseña("");
         }, 1000);
       } else {
         showModal("Error", result.message || "No se pudo registrar el usuario");
@@ -124,14 +136,14 @@ export default function RegistroYLogin() {
             {modo === "login" ? (
               <>
                 <Input
-                  type="text"
-                  placeholder="Nombre de Usuario"
-                  value={nombre_usuario}
-                  onChange={(e) => setNombre_usuario(e.target.value)}
+                  type="email"
+                  placeholder="Correo electrónico"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   page="login"
                 />
                 <Input
-                  type="contraseña"
+                  type="password"
                   placeholder="Contraseña"
                   value={contraseña}
                   onChange={(e) => setContraseña(e.target.value)}
@@ -150,16 +162,23 @@ export default function RegistroYLogin() {
                 />
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Correo electrónico"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   page="login"
                 />
                 <Input
-                  type="contraseña"
+                  type="password"
                   placeholder="Contraseña"
                   value={contraseña}
-                 onChange={(e) => setContraseña(e.target.value)} 
+                  onChange={(e) => setContraseña(e.target.value)}
+                  page="login"
+                />
+                <Input
+                  type="password"
+                  placeholder="Confirmar contraseña"
+                  value={confirmarContraseña}
+                  onChange={(e) => setConfirmarContraseña(e.target.value)}
                   page="login"
                 />
                 <Button onClick={registrar} text="Registrarse" />
