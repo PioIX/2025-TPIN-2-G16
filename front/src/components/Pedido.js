@@ -2,12 +2,14 @@
 
 import { useRef, useEffect, useState } from 'react';
 import styles from "./Pedido.module.css";
+import Image from 'next/image'
 
-export default function Pedido({clienteId=1, onOkClick}) {
+export default function Pedido({clienteId=1, onGoToCocina}) {
   const [pedido, setPedido] = useState('');
   const [clienteNombre, setClienteNombre] = useState('');
   const [personaje, setPersonaje] = useState('');
   const [loading, setLoading] = useState(true);
+  const characterImage = `/imagenesPersonajes/${personaje}.png`;
   const [showDialog, setShowDialog] = useState(false);
 
   // Función para obtener el pedido desde la base de datos
@@ -65,34 +67,33 @@ export default function Pedido({clienteId=1, onOkClick}) {
   });
 
   useEffect(() => {
-    const bgImg = new Image();
-    bgImg.onload = () => {
-      imagesRef.current.background = bgImg;
-      setImagesLoaded(prev => ({ ...prev, background: true }));
-    };
-    bgImg.onerror = () => {
-      console.error('Error cargando fondo');
-      setImagesLoaded(prev => ({ ...prev, background: false }));
-    };
-    bgImg.src = '/imagenesFondos/hamburgeseria.png';
+  const bgImg = new window.Image(); 
+  bgImg.onload = () => {
+    imagesRef.current.background = bgImg;
+    setImagesLoaded(prev => ({ ...prev, background: true }));
+  };
+  bgImg.onerror = () => {
+    console.error('Error cargando fondo');
+    setImagesLoaded(prev => ({ ...prev, background: false }));
+  };
+  bgImg.src = '/imagenesFondo/hamburgeseria.png';
 
-    const charImg = new Image();
-    charImg.onload = () => {
-      imagesRef.current.character = charImg;
-      setImagesLoaded(prev => ({ ...prev, character: true }));
-    };
-    charImg.onerror = () => {
-      console.error('Error cargando personaje:', characterImage);
-      setImagesLoaded(prev => ({ ...prev, character: false }));
-    };
-    charImg.src = characterImage;
+  const charImg = new window.Image(); 
+  charImg.onload = () => {
+    imagesRef.current.character = charImg;
+    setImagesLoaded(prev => ({ ...prev, character: true }));
+  };
+  charImg.onerror = () => {
+    console.error('Error cargando personaje:', characterImage);
+    setImagesLoaded(prev => ({ ...prev, character: false }));
+  };
+  charImg.src = characterImage;
 
-    return () => {
-      // Limpiar referencias de imagen
-      imagesRef.current.background = null;
-      imagesRef.current.character = null;
-    };
-  }, [characterImage]);
+  return () => {
+    imagesRef.current.background = null;
+    imagesRef.current.character = null;
+  };
+}, [characterImage]);
 
   const drawScene = (ctx) => {
     if (!ctx) return;
@@ -135,7 +136,7 @@ export default function Pedido({clienteId=1, onOkClick}) {
             animationRef.current.isAnimating = false;
             animationRef.current.hasFinished = true;
 
-            if (!loading && pedidoText) {
+            if (!loading && pedido) {
               setShowDialog(true);
             }
           }
@@ -153,13 +154,30 @@ export default function Pedido({clienteId=1, onOkClick}) {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [imagesLoaded, loading, pedidoText]);
+  }, [imagesLoaded, loading, pedido]);
 
   useEffect(() => {
-    if (animationRef.current.hasFinished && !loading && pedidoText && !showDialog) {
+    if (animationRef.current.hasFinished && !loading && pedido && !showDialog) {
       setShowDialog(true);
     }
-  }, [loading, pedidoText, showDialog]);
+  }, [loading, pedido, showDialog]);
+
+  const handleGoToCocina = () => {
+        const canvas = canvasRef.current;
+        if(!canvas) {
+            console.log("No hay canvas");
+            return;
+        }
+        try{
+            if(onGoToCocina) {
+                onGoToCocina();
+            } else {
+                console.error("onGoToCocina no está definida");
+            }
+        } catch(error){
+            console.error("Error al guardar la hamburguesa: ", error);
+        }
+    };
 
   // Resize handler
   useEffect(() => {
@@ -185,38 +203,29 @@ export default function Pedido({clienteId=1, onOkClick}) {
     return () => window.removeEventListener('resize', handleResize);
   }, [imagesLoaded]);
 
-  const handleOkClick = () => {
-    if (onOkClick) {
-      onOkClick();
-    } else {
-      window.location.href = '/cocina';
-    }
-  };
-
+  
   return (
-    <div className={styles.pedidoContainer}>
-      <canvas
-        ref={canvasRef}
-        className={styles.canvas}
-      />
+  <div className={styles.pedidoContainer}>
+    <canvas
+      ref={canvasRef}
+      className={styles.canvas}
+    />
+    {showDialog && !loading && (
+      <div className={styles.dialogContainer}>
+        <div className={styles.dialogBubble}>
+          <h3 className={styles.clienteNombre}>{clienteNombre}</h3>
+          <p className={styles.dialogText}>
+            {pedido}
+          </p>
+        </div>
 
-      {showDialog && !loading && (
-        <div className={styles.dialogContainer}>
-          <div className={styles.dialogBubble}>
-            <h3 className={styles.clienteNombre}>{clienteNombre}</h3>
-            <p className={styles.dialogText}>
-              {pedidoText}
-            </p>
-          </div>
-
-          <button
-            onClick={handleOkClick}
-            className={styles.okButton}
-          >
-            OK
+        <div className={styles.btns}>
+          <button className={styles.bake} onClick={handleGoToCocina}>
+            A Cocinar
           </button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }
