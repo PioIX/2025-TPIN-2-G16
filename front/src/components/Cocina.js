@@ -12,7 +12,8 @@ export default function Cocina({onGoToEntrega}) {
         {id:4, name:"Lechuga", image:"/imagenesHamburguesa/Lechuga.png", type: "ingredient", size: 180},
         {id:5, name:"Tomate", image:"/imagenesHamburguesa/Tomate.png", type: "ingredient", size: 180},
         {id:6, name:"Cebolla", image:"/imagenesHamburguesa/Cebolla.png", type: "ingredient", size: 180},
-        {id:7, name:"Pan Arriba", image:"/imagenesHamburguesa/PanArribaHamburguesa.png", type: "top", size: 200}
+        {id:7, name:"Pan Arriba", image:"/imagenesHamburguesa/PanArribaHamburguesa.png", type: "top", size: 200},
+        {id:8, name:"Panceta", image:"/imagenesHamburguesa/Panceta.png", type: "ingredient", size: 180},
     ]
 
     const [visibleBuns, setVisibleBuns] = useState([true, true, true, true, true, true, true, true])
