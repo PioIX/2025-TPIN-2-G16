@@ -11,6 +11,7 @@ export default function RegistroYLogin() {
   const [nombre_usuario, setNombre_usuario] = useState("");
   const [email, setEmail] = useState("");
   const [contraseña, setContraseña] = useState("");
+  const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [mostrarMensaje, setMostrarMensaje] = useState(false);
   const [textoMensaje, setTextoMensaje] = useState("");
   const router = useRouter();
@@ -35,15 +36,15 @@ export default function RegistroYLogin() {
 
     try {
       console.log(datosLogin);
-      const response = await fetch("http://localhost:4000/loginUsuario", {
+      const response = await fetch("http://localhost:3000/loginUsuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosLogin),
       });
-      
+
       const result = await response.json();
       console.log("Respuesta del servidor:", result);
-      
+
       if (result.validar === true) {
         sessionStorage.setItem("playerId", result.id);
         router.push("/inicio");
@@ -74,7 +75,7 @@ export default function RegistroYLogin() {
     };
 
     try {
-      const response = await fetch("http://localhost:4000/registroUsuario", {
+      const response = await fetch("http://localhost:3000/registroUsuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosRegistro),
@@ -85,10 +86,8 @@ export default function RegistroYLogin() {
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
-        // Cambiar a modo login después de 1 segundo
         setTimeout(() => {
           setModo("login");
-          // Limpiar campos
           setNombre_usuario("");
           setEmail("");
           setContraseña("");
@@ -136,10 +135,10 @@ export default function RegistroYLogin() {
             {modo === "login" ? (
               <>
                 <Input
-                  type="email"
-                  placeholder="Correo electrónico"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text" 
+                  placeholder="Nombre de usuario" 
+                  value={nombre_usuario}  
+                  onChange={(e) => setNombre_usuario(e.target.value)}
                   page="login"
                 />
                 <Input
