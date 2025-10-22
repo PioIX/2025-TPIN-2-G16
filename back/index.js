@@ -320,30 +320,19 @@ app.post('/registroUsuario', async function (req, res) {
 app.get('/clientesPedido', async function (req, res) {
   const clienteId = req.query.id_cliente;
   console.log("Buscando pedido del cliente:", clienteId);
+  
   try {
-    let query;
-    // Si se proporciona un ID específico, buscar ese cliente
+    let result;
+    
     if (clienteId) {
-      query = `
-        SELECT id_cliente, nombre, personaje, pedido
-        FROM Clientes 
-        WHERE id_cliente = ${clienteId}
-      `;
+      result = await realizarQuery(
+        'SELECT id_cliente, nombre, personaje, pedido FROM Clientes WHERE id_cliente = ?',
+        [clienteId]
+      );
     } else {
-      // Si no se proporciona ID, obtener un cliente aleatorio
-      query = `
-        SELECT id_cliente, nombre, personaje, pedido
-        FROM Clientes 
-        ORDER BY RAND() 
-        LIMIT 1
-      `;
-    }
-    const result = await realizarQuery(query);
-    // Si no hay clientes en la base de datos
-    if (result.length === 0) {
-      return res.status(404).json({ 
-        error: clienteId ? 'Cliente no encontrado' : 'No hay clientes disponibles' 
-      });
+      result = await realizarQuery(
+        'SELECT id_cliente, nombre, personaje, pedido FROM Clientes ORDER BY RAND() LIMIT 1'
+      );
     }
     // Enviar la respuesta con el formato esperado
     res.json({

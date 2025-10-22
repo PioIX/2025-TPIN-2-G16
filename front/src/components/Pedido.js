@@ -9,7 +9,7 @@ export default function Pedido({clienteId=1, onGoToCocina}) {
   const [clienteNombre, setClienteNombre] = useState('');
   const [personaje, setPersonaje] = useState('');
   const [loading, setLoading] = useState(true);
-  const characterImage = `/imagenesPersonajes/${personaje}.png`;
+  const [characterImage, setCharacterImage] = useState("/imagenesPersonajes/Personaje1.png")
   const [showDialog, setShowDialog] = useState(false);
 
   // Función para obtener el pedido desde la base de datos
@@ -84,16 +84,16 @@ export default function Pedido({clienteId=1, onGoToCocina}) {
     setImagesLoaded(prev => ({ ...prev, character: true }));
   };
   charImg.onerror = () => {
-    console.error('Error cargando personaje:', characterImage);
+    console.error('Error cargando personaje:', "/imagenesPersonajes/Personaje1.png");
     setImagesLoaded(prev => ({ ...prev, character: false }));
   };
-  charImg.src = characterImage;
+  charImg.src = "/imagenesPersonajes/Personaje1.png";
 
   return () => {
     imagesRef.current.background = null;
     imagesRef.current.character = null;
   };
-}, [characterImage]);
+}, [ "/imagenesPersonajes/Personaje1.png"]);
 
   const drawScene = (ctx) => {
     if (!ctx) return;

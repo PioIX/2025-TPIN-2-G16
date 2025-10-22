@@ -1,21 +1,25 @@
 {
-  "name": "tpfinal",
-  "version": "0.1.0",
-  "private": true,
+  "name": "2025-TPIN2-G16",
+  "version": "1.0.0",
+  "description": "proyecto de NodeJs",
+  "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "pio": "nodemon --env-file=.pio.env index.js",
+    "home": "nodemon --env-file=.home.env index.js",
+    "dev": "nodemon server.js"
   },
+  "keywords": [
+    "ES"
+  ],
+  "author": "SILVA",
+  "license": "ISC",
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.5"
-  },
-  "devDependencies": {
-    "eslint": "^9",
-    "eslint-config-next": "15.5.5",
-    "@eslint/eslintrc": "^3"
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
   }
 }
