@@ -49,30 +49,63 @@ export default function RegistroYLogin() {
 
       console.log("Status de respuesta:", response.status);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error del servidor:", errorText);
-        throw new Error(`El servidor respondió con error ${response.status}`);
+      let result;
+      let errorMessage = null;
+
+      // Intentar parsear la respuesta
+      try {
+        const textResponse = await response.text();
+        console.log("Respuesta en texto:", textResponse);
+        console.log("Content-Type:", response.headers.get('content-type'));
+        
+        if (textResponse) {
+          // Verificar si la respuesta parece ser HTML
+          if (textResponse.trim().startsWith('<!DOCTYPE') || textResponse.trim().startsWith('<html')) {
+            console.error("El servidor devolvió HTML en lugar de JSON");
+            errorMessage = "El servidor devolvió una respuesta inválida (HTML en lugar de JSON)";
+          } else {
+            try {
+              result = JSON.parse(textResponse);
+            } catch (parseError) {
+              console.error("Error al parsear JSON:", parseError);
+              console.error("Texto recibido:", textResponse.substring(0, 200));
+              errorMessage = "Respuesta inválida del servidor";
+            }
+          }
+        }
+      } catch (readError) {
+        console.error("Error al leer respuesta:", readError);
+        errorMessage = "No se pudo leer la respuesta del servidor";
       }
 
-      const result = await response.json();
-      console.log("Respuesta del servidor:", result);
+      // Manejar errores HTTP
+      if (!response.ok) {
+        const mensaje = errorMessage || 
+                       (result && (result.message || result.error)) || 
+                       `Error del servidor (${response.status})`;
+        showModal("Error", mensaje);
+        setCargando(false);
+        return;
+      }
 
-      if (result.validar === true) {
+      // Procesar respuesta exitosa
+      console.log("Respuesta procesada:", result);
+
+      if (result && result.validar === true) {
         sessionStorage.setItem("playerId", result.id);
         showModal("Éxito", "¡Inicio de sesión exitoso!");
         setTimeout(() => {
           router.push("/inicio");
         }, 1000);
       } else {
-        showModal("Error", result.message || "Credenciales incorrectas");
+        showModal("Error", (result && result.message) || "Credenciales incorrectas");
       }
     } catch (error) {
       console.error("Error completo:", error);
-      if (error.message.includes("fetch")) {
+      if (error.message && error.message.includes("fetch")) {
         showModal("Error", "No se pudo conectar al servidor. Verifica que esté corriendo en http://localhost:4000");
       } else {
-        showModal("Error", `Hubo un problema: ${error.message}`);
+        showModal("Error", `Hubo un problema: ${error.message || "Error desconocido"}`);
       }
     } finally {
       setCargando(false);
@@ -114,16 +147,51 @@ export default function RegistroYLogin() {
         body: JSON.stringify(datosRegistro),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error del servidor:", errorText);
-        throw new Error(`El servidor respondió con error ${response.status}`);
+      console.log("Status de respuesta:", response.status);
+
+      let result;
+      let errorMessage = null;
+
+      // Intentar parsear la respuesta
+      try {
+        const textResponse = await response.text();
+        console.log("Respuesta en texto:", textResponse);
+        console.log("Content-Type:", response.headers.get('content-type'));
+        
+        if (textResponse) {
+          // Verificar si la respuesta parece ser HTML
+          if (textResponse.trim().startsWith('<!DOCTYPE') || textResponse.trim().startsWith('<html')) {
+            console.error("El servidor devolvió HTML en lugar de JSON");
+            errorMessage = "El servidor devolvió una respuesta inválida (HTML en lugar de JSON)";
+          } else {
+            try {
+              result = JSON.parse(textResponse);
+            } catch (parseError) {
+              console.error("Error al parsear JSON:", parseError);
+              console.error("Texto recibido:", textResponse.substring(0, 200));
+              errorMessage = "Respuesta inválida del servidor";
+            }
+          }
+        }
+      } catch (readError) {
+        console.error("Error al leer respuesta:", readError);
+        errorMessage = "No se pudo leer la respuesta del servidor";
       }
 
-      const result = await response.json();
-      console.log("Respuesta del servidor:", result);
+      // Manejar errores HTTP
+      if (!response.ok) {
+        const mensaje = errorMessage || 
+                       (result && (result.message || result.error)) || 
+                       `Error del servidor (${response.status})`;
+        showModal("Error", mensaje);
+        setCargando(false);
+        return;
+      }
 
-      if (result.res === true) {
+      // Procesar respuesta exitosa
+      console.log("Respuesta procesada:", result);
+
+      if (result && result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
         setTimeout(() => {
           setModo("login");
@@ -133,14 +201,14 @@ export default function RegistroYLogin() {
           setConfirmarContraseña("");
         }, 1500);
       } else {
-        showModal("Error", result.message || "No se pudo registrar el usuario");
+        showModal("Error", (result && result.message) || "No se pudo registrar el usuario");
       }
     } catch (error) {
       console.error("Error completo:", error);
-      if (error.message.includes("fetch") || error.message.includes("Failed to fetch")) {
+      if (error.message && error.message.includes("fetch")) {
         showModal("Error", "No se pudo conectar al servidor. Verifica que esté corriendo en http://localhost:4000");
       } else {
-        showModal("Error", `Hubo un problema: ${error.message}`);
+        showModal("Error", `Hubo un problema: ${error.message || "Error desconocido"}`);
       }
     } finally {
       setCargando(false);
