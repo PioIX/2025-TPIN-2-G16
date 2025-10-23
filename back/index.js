@@ -285,7 +285,7 @@ app.post('/registroUsuario', async function (req, res) {
   try {
     // Validar que lleguen todos los datos
     if (!req.body.nombre_usuario || !req.body.email || !req.body.contraseña) {
-      return res.status(400).send({
+      return res.status(400).json({
         res: false,
         message: "Debes completar todos los campos"
       });
@@ -297,8 +297,8 @@ app.post('/registroUsuario', async function (req, res) {
       [req.body.email]
     );
     
-    if (existingEmail.length > 0) {
-      return res.send({
+    if (existingEmail && existingEmail.length > 0) {
+      return res.status(200).json({
         res: false,
         message: "Ya existe un usuario con este email"
       });
@@ -310,8 +310,8 @@ app.post('/registroUsuario', async function (req, res) {
       [req.body.nombre_usuario]
     );
     
-    if (existingUsername.length > 0) {
-      return res.send({
+    if (existingUsername && existingUsername.length > 0) {
+      return res.status(200).json({
         res: false,
         message: "El nombre de usuario ya está en uso"
       });
@@ -325,17 +325,18 @@ app.post('/registroUsuario', async function (req, res) {
     
     console.log("Usuario registrado exitosamente. ID:", insertResult.insertId);
     
-    res.send({
+    return res.status(200).json({
       res: true,
       message: "Usuario registrado correctamente",
       id: insertResult.insertId
     });
     
   } catch (error) {
-    console.error("Error al registrar usuario:", error);
-    res.status(500).send({
+    console.error("Error completo al registrar usuario:", error);
+    console.error("Stack trace:", error.stack);
+    return res.status(500).json({
       res: false,
-      message: "Error en el servidor al registrar usuario"
+      message: "Error en el servidor: " + error.message
     });
   }
 });
