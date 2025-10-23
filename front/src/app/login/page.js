@@ -14,12 +14,12 @@ export default function RegistroYLogin() {
   const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [mostrarMensaje, setMostrarMensaje] = useState(false);
   const [textoMensaje, setTextoMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
   const router = useRouter();
 
   const showModal = (title, message) => {
     setTextoMensaje(`${title}: ${message}`);
     setMostrarMensaje(true);
-    // Auto-cerrar después de 3 segundos
     setTimeout(() => setMostrarMensaje(false), 3000);
   };
 
@@ -34,26 +34,48 @@ export default function RegistroYLogin() {
       contraseña: contraseña,
     };
 
+    setCargando(true);
+
     try {
-      console.log(datosLogin);
-      const response = await fetch("http://localhost:3000/loginUsuario", {
+      console.log("Enviando datos de login:", datosLogin);
+      
+      const response = await fetch("http://localhost:4000/loginUsuario", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(datosLogin),
       });
+
+      console.log("Status de respuesta:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error del servidor:", errorText);
+        throw new Error(`El servidor respondió con error ${response.status}`);
+      }
 
       const result = await response.json();
       console.log("Respuesta del servidor:", result);
 
       if (result.validar === true) {
         sessionStorage.setItem("playerId", result.id);
-        router.push("/inicio");
+        showModal("Éxito", "¡Inicio de sesión exitoso!");
+        setTimeout(() => {
+          router.push("/inicio");
+        }, 1000);
       } else {
         showModal("Error", result.message || "Credenciales incorrectas");
       }
     } catch (error) {
-      console.error(error);
-      showModal("Error", "Hubo un problema con la conexión al servidor.");
+      console.error("Error completo:", error);
+      if (error.message.includes("fetch")) {
+        showModal("Error", "No se pudo conectar al servidor. Verifica que esté corriendo en http://localhost:4000");
+      } else {
+        showModal("Error", `Hubo un problema: ${error.message}`);
+      }
+    } finally {
+      setCargando(false);
     }
   }
 
@@ -68,21 +90,38 @@ export default function RegistroYLogin() {
       return;
     }
 
+    if (contraseña.length < 6) {
+      showModal("Error", "La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
     const datosRegistro = {
       nombre_usuario,
       email,
       contraseña,
     };
 
+    setCargando(true);
+
     try {
-      const response = await fetch("http://localhost:3000/registroUsuario", {
+      console.log("Enviando datos de registro:", { ...datosRegistro, contraseña: "***" });
+      
+      const response = await fetch("http://localhost:4000/registroUsuario", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(datosRegistro),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error del servidor:", errorText);
+        throw new Error(`El servidor respondió con error ${response.status}`);
+      }
+
       const result = await response.json();
-      console.log(result);
+      console.log("Respuesta del servidor:", result);
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
@@ -92,13 +131,19 @@ export default function RegistroYLogin() {
           setEmail("");
           setContraseña("");
           setConfirmarContraseña("");
-        }, 1000);
+        }, 1500);
       } else {
         showModal("Error", result.message || "No se pudo registrar el usuario");
       }
     } catch (error) {
-      console.error(error);
-      showModal("Error", "Hubo un problema con la conexión al servidor.");
+      console.error("Error completo:", error);
+      if (error.message.includes("fetch") || error.message.includes("Failed to fetch")) {
+        showModal("Error", "No se pudo conectar al servidor. Verifica que esté corriendo en http://localhost:4000");
+      } else {
+        showModal("Error", `Hubo un problema: ${error.message}`);
+      }
+    } finally {
+      setCargando(false);
     }
   }
 
@@ -120,12 +165,14 @@ export default function RegistroYLogin() {
             <button
               className={`${styles.tab} ${modo === "login" ? styles.tabActive : ""}`}
               onClick={() => setModo("login")}
+              disabled={cargando}
             >
               LOGIN
             </button>
             <button
               className={`${styles.tab} ${modo === "registro" ? styles.tabActive : ""}`}
               onClick={() => setModo("registro")}
+              disabled={cargando}
             >
               REGISTRO
             </button>
@@ -140,6 +187,7 @@ export default function RegistroYLogin() {
                   value={nombre_usuario}  
                   onChange={(e) => setNombre_usuario(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
                 <Input
                   type="password"
@@ -147,8 +195,13 @@ export default function RegistroYLogin() {
                   value={contraseña}
                   onChange={(e) => setContraseña(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
-                <Button onClick={ingresar} text="Ingresar" />
+                <Button 
+                  onClick={ingresar} 
+                  text={cargando ? "Ingresando..." : "Ingresar"} 
+                  disabled={cargando}
+                />
               </>
             ) : (
               <>
@@ -158,6 +211,7 @@ export default function RegistroYLogin() {
                   value={nombre_usuario}
                   onChange={(e) => setNombre_usuario(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
                 <Input
                   type="email"
@@ -165,6 +219,7 @@ export default function RegistroYLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
                 <Input
                   type="password"
@@ -172,6 +227,7 @@ export default function RegistroYLogin() {
                   value={contraseña}
                   onChange={(e) => setContraseña(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
                 <Input
                   type="password"
@@ -179,8 +235,13 @@ export default function RegistroYLogin() {
                   value={confirmarContraseña}
                   onChange={(e) => setConfirmarContraseña(e.target.value)}
                   page="login"
+                  disabled={cargando}
                 />
-                <Button onClick={registrar} text="Registrarse" />
+                <Button 
+                  onClick={registrar} 
+                  text={cargando ? "Registrando..." : "Registrarse"} 
+                  disabled={cargando}
+                />
               </>
             )}
           </div>
