@@ -10,7 +10,7 @@ export default function MenuPrincipal() {
   const [mostrarReglas, setMostrarReglas] = useState(false)
 
   const handleJugar = () => {
-    router.push('/Juego')
+    router.push('/juego')
   }
 
   const toggleReglas = () => {
