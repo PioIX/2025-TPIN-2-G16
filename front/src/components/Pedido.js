@@ -160,7 +160,7 @@ setShowDialog(true);
 const handleGoToCocina = () => {
 try{
 if(onGoToCocina) {
-onGoToKitchen();
+onGoToCocina();
 } else {
 console.error("onGoToCocina no está definida");
 }
