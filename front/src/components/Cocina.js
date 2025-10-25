@@ -118,32 +118,17 @@ export default function Cocina({onGoToEntrega}) {
         img.src = ingredient.image
     }
 
-    const handleGoToOven = () => {
-        const canvas = canvasRef.current
-        if (!canvas) {
-            alert("No hay hamburguesa para cocinar")
-            return
+    const handleGoToEntrega = () => {
+        try{
+        if(onGoToEntrega) {
+        onGoToEntrega();
+        } else {
+        console.error("onGoToEntrega no está definida");
         }
-
-        if (hamburgerLayers.length === 0) {
-            alert("¡Debes agregar ingredientes a tu hamburguesa!")
-            return
+        } catch(error){
+        console.error("Error al guardar la hamburguesa: ", error);
         }
-
-        try {
-            const pngData = canvas.toDataURL('image/png')
-            setSavedHamburgerImage(pngData)
-            console.log("Hamburguesa guardada exitosamente")
-
-            if (onGoToEntrega) {
-                onGoToEntrega(pngData)
-            } else {
-                console.error("onGoToEntrega no está definida")
-            }
-        } catch (error) {
-            console.error("Error al guardar la hamburguesa: ", error)
-        }
-    }
+    };
 
     const handleResetHamburger = () => {
         setHamburgerLayers([])
@@ -217,11 +202,8 @@ export default function Cocina({onGoToEntrega}) {
                     </div>
 
                     <div className={styles.btns}>
-                        <button className={styles.reset} onClick={handleResetHamburger}>
-                            Reiniciar
-                        </button>
-                        <button className={styles.bake} onClick={handleGoToOven}>
-                            Cocinar
+                        <button className={styles.bake} onClick={handleGoToEntrega}>
+                            Entregar
                         </button>
                     </div>
                 </div>

@@ -18,29 +18,34 @@ export default function Juego() {
 
   const handleGoToEntrega = (imageData) => {
     console.log("Cambiando a Entrega con imagen:", imageData);
-    setHamburguesaImage(imageData);
+    //setHamburguesaImage(imageData);
     setShowCocina(false);
     setShowEntrega(true);
   };
 
-  /*const handleGoToDeliver = () => {
-     console.log("Cambiando a Deliver");
-     setShowDeliver(true);
-     setShowCut(false);
- };*/
 
   return (
     <>
       <div className={styles.container1}>
-        <div className={styles.section}>
-          {showEntrega ? (
-            <Entrega />
-          ) : showCocina ? (
-            <Cocina />
+        {!showEntrega ? (
+          !showCocina ? (
+            <>
+              <div className={styles.section}>
+                <Pedido key={Date.now()} onGoToCocina={handleGoToCocina} />
+              </div>
+            </>
           ) : (
-            <Pedido key={Date.now()} onGoToCocina={handleGoToCocina} />
-          )}
-        </div>
+            <>
+              <div className={styles.section}>
+                <Cocina onGoToEntrega={handleGoToEntrega} />
+              </div>
+            </>
+          )
+        ) : (
+          <div className={styles.section}>
+            <Entrega />
+          </div>
+        )}
       </div>
     </>
   );
