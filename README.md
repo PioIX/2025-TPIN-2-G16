@@ -19,7 +19,12 @@ Cada cliente tiene sus preferencias, así que tenés que estar bien atento a sus
 
 -Preparar la Hamburguesa: Aca empieza lo divertido. Tenes que armar la hamburguesa con los ingredientes correctos y asegurarte de que todo esté como lo pidió el cliente.
 
+<img width="738" height="562" alt="Captura de pantalla 2025-10-29 083310" src="https://github.com/user-attachments/assets/02b7faa8-26a2-4d4c-aac2-c5d9541d29f9" />
+
+
 -Servir la Hamburguesa: Lo último es llevar la hamburguesa al cliente antes de que se agote el tiempo. Si lo haces bien, ¡ganas puntos!
+
+<img width="649" height="488" alt="Captura de pantalla 2025-10-29 083549" src="https://github.com/user-attachments/assets/97394f3f-5bcd-414d-8392-10a396d7fccf" />
 
 --¿Qué lo hace especial?
 
