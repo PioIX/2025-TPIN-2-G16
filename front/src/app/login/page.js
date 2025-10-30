@@ -7,94 +7,94 @@ import Button from "../../components/Button";
 import styles from "./page.module.css";
 
 export default function RegistroYLogin() {
-const [modo, setModo] = useState("login");
-const [nombre_usuario, setNombre_usuario] = useState("");
-const [email, setEmail] = useState("");
-const [contraseña, setContraseña] = useState("");
-const [confirmContraseña, setConfirmContraseña] = useState("");
-const [mostrarMensaje, setMostrarMensaje] = useState(false); //showModal
-const [textoMensaje, setTextoMensaje] = useState(""); //showModal
-const router = useRouter();
+  const [modo, setModo] = useState("login");
+  const [nombre_usuario, setNombre_usuario] = useState("");
+  const [email, setEmail] = useState("");
+  const [contraseña, setContraseña] = useState("");
+  const [confirmContraseña, setConfirmContraseña] = useState("");
+  const [mostrarMensaje, setMostrarMensaje] = useState(false); //showModal
+  const [textoMensaje, setTextoMensaje] = useState(""); //showModal
+  const router = useRouter();
 
 
-const showModal = (title, message) => {
-setTextoMensaje(`${title}: ${message}`);
-setMostrarMensaje(true);
-};
+  const showModal = (title, message) => {
+    setTextoMensaje(`${title}: ${message}`);
+    setMostrarMensaje(true);
+  };
 
 
 
 
-async function ingresar() {
-if(!nombre_usuario || !contraseña) {
-showModal("Error. Debes completar todos los campos")
-return
-}
-const datosLogin = {
-nombre_usuario: nombre_usuario,
-contraseña: contraseña,
-}
-try {
-console.log(datosLogin)
-const response = await fetch("http://localhost:4000/loginUsuario", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(datosLogin),
-})
-const result = await response.json()
-console.log("Respuesta del servidor:", result)
-if (result.validar === true) {
-sessionStorage.setItem("JugadorId", result.id)
-router.push("/juego");
-} else {
-showModal("Error", result.message || "Credenciales incorrectas");
-}
-} catch (error) {
-console.error(error);
-showModal("Error", "Hubo un problema con la conexión al servidor.");
-}
-}
+  async function ingresar() {
+    if (!nombre_usuario || !contraseña) {
+      showModal("Error. Debes completar todos los campos")
+      return
+    }
+    const datosLogin = {
+      nombre_usuario: nombre_usuario,
+      contraseña: contraseña,
+    }
+    try {
+      console.log(datosLogin)
+      const response = await fetch("http://localhost:4000/loginUsuario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datosLogin),
+      })
+      const result = await response.json()
+      console.log("Respuesta del servidor:", result)
+      if (result.validar === true) {
+        sessionStorage.setItem("JugadorId", result.id)
+        router.push("/juego");
+      } else {
+        showModal("Error", result.message || "Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error(error);
+      showModal("Error", "Hubo un problema con la conexión al servidor.");
+    }
+  }
 
-async function registrar() {
-if (!nombre_usuario || !email || !contraseña || !confirmContraseña) {
-showModal("Error", "Debes completar todos los campos")
-return
-}
+  async function registrar() {
+    if (!nombre_usuario || !email || !contraseña || !confirmContraseña) {
+      showModal("Error", "Debes completar todos los campos")
+      return
+    }
 
-if (contraseña !== confirmContraseña) {
-showModal("Error", "Las contraseñas no coinciden")
-return
-}
+    if (contraseña !== confirmContraseña) {
+      showModal("Error", "Las contraseñas no coinciden")
+      return
+    }
 
-const datosRegistro = {
-nombre_usuario,
-email,
-contraseña,
-};
+    const datosRegistro = {
+      nombre_usuario,
+      email,
+      contraseña,
+    };
 
-try {
-const response = await fetch("http://localhost:4000/registroUsuario", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(datosRegistro),
-});
+    try {
+      const response = await fetch("http://localhost:4000/registroUsuario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datosRegistro),
+      });
 
-const result = await response.json();
-console.log(result);
+      const result = await response.json();
+      console.log(result);
 
-if (result.res === true) {
-showModal("Éxito", "¡Usuario registrado correctamente!");
-setTimeout(() => setModo("login"), 1000);
-} else {
-showModal("Error", result.message || "No se pudo registrar el usuario");
-}
-} catch (error) {
-console.error(error);
-showModal("Error", "Hubo un problema con la conexión al servidor.");
-}
-}
+      if (result.res === true) {
+        showModal("Éxito", "¡Usuario registrado correctamente!");
+        setTimeout(() => setModo("login"), 1000);
+      } else {
+        showModal("Error", result.message || "No se pudo registrar el usuario");
+      }
+    } catch (error) {
+      console.error(error);
+      showModal("Error", "Hubo un problema con la conexión al servidor.");
+    }
+  }
 
- return (
+  return (
     <div className={styles.container}>
       <div className={styles.burgerContainer}>
         <div className={styles.burgerIcon}>
@@ -162,7 +162,14 @@ showModal("Error", "Hubo un problema con la conexión al servidor.");
                   type="contraseña"
                   placeholder="Contraseña"
                   value={contraseña}
-                 onChange={(e) => setContraseña(e.target.value)} 
+                  onChange={(e) => setContraseña(e.target.value)}
+                  page="login"
+                />
+                <Input
+                  type="contraseña"
+                  placeholder="Confirmar Contraseña"
+                  value={confirmContraseña}
+                  onChange={(e) => setConfirmContraseña(e.target.value)}
                   page="login"
                 />
                 <Button onClick={registrar} text="Registrarse" />
