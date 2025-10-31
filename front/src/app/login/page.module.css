@@ -6,17 +6,18 @@
   background: linear-gradient(135deg, #2c5f6f 0%, #1a3d4d 100%);
   padding: 2rem;
   font-family: 'Arial', sans-serif;
+  position: relative;
 }
 
 .burgerContainer {
-  position: relative;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 }
 
 .burgerIcon {
-  position: absolute;
   width: 400px;
   height: 400px;
   display: flex;
@@ -24,7 +25,6 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  z-index: 1;
 }
 
 .bunTop {
@@ -192,31 +192,6 @@
     transform: translateX(0);
     opacity: 1;
   }
-}
-
-.popupContent {
-  background: rgba(40, 40, 40, 0.98);
-  padding: 2rem;
-  border-radius: 15px;
-  border: 3px solid #ffb347;
-}
-
-.closeButton {
-  padding: 0.8rem 2rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #2a2a2a;
-  background: #ffb347;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-}
-
-.closeButton:hover {
-  background: #ff9933;
-  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
