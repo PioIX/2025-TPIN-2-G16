@@ -12,7 +12,7 @@ export default function Entrega() {
   useEffect(() => {
     const nombre = localStorage.getItem('currentClienteNombre');
     setClienteNombre(nombre);
-    
+
     const fetchPedido = async () => {
       try {
         setLoading(true);
@@ -20,7 +20,7 @@ export default function Entrega() {
           setCharacterImage(`/imagenesPersonajes/${nombre}.png`);
         }
       } catch (error) {
-        console.error('Error al cargar el customer:', error);
+        console.error('Error al cargar el cliente:', error);
       } finally {
         setLoading(false);
       }
@@ -124,6 +124,12 @@ export default function Entrega() {
     return () => window.removeEventListener('resize', handleResize);
   }, [imagesLoaded]);
 
+  const handleNextCliente = () => {
+    if (onNextCliente) {
+      onNextCliente();
+    }
+  };
+
   return (
     <div className={styles.oContainer}>
       <div className={styles.header}>
@@ -135,6 +141,31 @@ export default function Entrega() {
         ref={canvasRef}
         className={styles.canvas}
       />
+
+      {showThanks && (
+        <div className={styles.dialogContainer}>
+          <div className={styles.dialogBubble}>
+            <p className={styles.dialogText}>
+              ¡Gracias!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showNextButton && (
+        <div className={styles.nextButtonContainer}>
+          <button
+            className={styles.nextButton}
+            onClick={handleNextCliente}
+          >
+            {currentCliente < totalClientes
+              ? `Siguiente cliente`
+              : '¡Terminar juego!'
+            }
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
