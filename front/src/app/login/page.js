@@ -6,28 +6,26 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import styles from "./page.module.css";
 
+
 export default function RegistroYLogin() {
   const [modo, setModo] = useState("login");
-  const [nombre_usuario, setNombre_usuario] = useState("");
+  const [nombre_usuario, setNombre_Usuario] = useState("");
   const [email, setEmail] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [confirmContraseña, setConfirmContraseña] = useState("");
-  const [mostrarMensaje, setMostrarMensaje] = useState(false); //showModal
-  const [textoMensaje, setTextoMensaje] = useState(""); //showModal
+  const [mostrarMensaje, setMostrarMensaje] = useState(false);
+  const [textoMensaje, setTextoMensaje] = useState("");
   const router = useRouter();
-
-
+  
   const showModal = (title, message) => {
     setTextoMensaje(`${title}: ${message}`);
     setMostrarMensaje(true);
+    setTimeout(() => setMostrarMensaje(false), 3000);
   };
-
-
-
 
   async function ingresar() {
     if (!nombre_usuario || !contraseña) {
-      showModal("Error. Debes completar todos los campos")
+      showModal("Error", "Debes completar todos los campos")
       return
     }
     const datosLogin = {
@@ -44,7 +42,7 @@ export default function RegistroYLogin() {
       const result = await response.json()
       console.log("Respuesta del servidor:", result)
       if (result.validar === true) {
-        sessionStorage.setItem("JugadorId", result.id)
+        sessionStorage.setItem("jugadorId", result.id)
         router.push("/juego");
       } else {
         showModal("Error", result.message || "Credenciales incorrectas");
@@ -72,6 +70,8 @@ export default function RegistroYLogin() {
       contraseña,
     };
 
+    console.log("Datos a enviar:", datosRegistro)
+
     try {
       const response = await fetch("http://localhost:4000/registroUsuario", {
         method: "POST",
@@ -79,107 +79,115 @@ export default function RegistroYLogin() {
         body: JSON.stringify(datosRegistro),
       });
 
+      console.log("Status de la respuesta:", response.status)
+
       const result = await response.json();
-      console.log(result);
+      console.log("Resultado completo:", result);
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
-        setTimeout(() => setModo("login"), 1000);
+        setTimeout(() => setModo("login"), 1500);
       } else {
         showModal("Error", result.message || "No se pudo registrar el usuario");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error completo:", error);
       showModal("Error", "Hubo un problema con la conexión al servidor.");
     }
   }
 
   return (
     <div className={styles.container}>
+      {/* Hamburguesa de fondo */}
       <div className={styles.burgerContainer}>
         <div className={styles.burgerIcon}>
           <div className={styles.bunTop}></div>
+          <div className={styles.lettuce}></div>
           <div className={styles.cheese}></div>
           <div className={styles.meat}></div>
-          <div className={styles.lettuce}></div>
-          <div className={styles.meat2}></div>
           <div className={styles.lettuce2}></div>
           <div className={styles.bunBottom}></div>
         </div>
+      </div>
 
-        <div className={styles.formCard}>
-          <div className={styles.tabsContainer}>
-            <button
-              className={`${styles.tab} ${modo === "login" ? styles.tabActive : ""}`}
-              onClick={() => setModo("login")}
-            >
-              LOGIN
-            </button>
-            <button
-              className={`${styles.tab} ${modo === "registro" ? styles.tabActive : ""}`}
-              onClick={() => setModo("registro")}
-            >
-              REGISTRO
-            </button>
-          </div>
-
-          <div className={styles.formContainer}>
-            {modo === "login" ? (
-              <>
-                <Input
-                  type="text"
-                  placeholder="Nombre de Usuario"
-                  value={nombre_usuario}
-                  onChange={(e) => setNombre_usuario(e.target.value)}
-                  page="login"
-                />
-                <Input
-                  type="contraseña"
-                  placeholder="Contraseña"
-                  value={contraseña}
-                  onChange={(e) => setContraseña(e.target.value)}
-                  page="login"
-                />
-                <Button onClick={ingresar} text="Ingresar" />
-              </>
-            ) : (
-              <>
-                <Input
-                  type="text"
-                  placeholder="Nombre de usuario"
-                  value={nombre_usuario}
-                  onChange={(e) => setNombre_usuario(e.target.value)}
-                  page="login"
-                />
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  page="login"
-                />
-                <Input
-                  type="contraseña"
-                  placeholder="Contraseña"
-                  value={contraseña}
-                  onChange={(e) => setContraseña(e.target.value)}
-                  page="login"
-                />
-                <Input
-                  type="contraseña"
-                  placeholder="Confirmar Contraseña"
-                  value={confirmContraseña}
-                  onChange={(e) => setConfirmContraseña(e.target.value)}
-                  page="login"
-                />
-                <Button onClick={registrar} text="Registrarse" />
-              </>
-            )}
-          </div>
+      {/* Formulario */}
+      <div className={styles.formCard}>
+        <div className={styles.tabsContainer}>
+          <button 
+            className={`${styles.tab} ${modo === "login" ? styles.tabActive : ""}`} 
+            onClick={() => setModo("login")}
+          >
+            LOGIN
+          </button>
+          <button 
+            className={`${styles.tab} ${modo === "registro" ? styles.tabActive : ""}`} 
+            onClick={() => setModo("registro")}
+          >
+            REGISTRO
+          </button>
+        </div>
+        
+        <div className={styles.formContainer}>
+          {modo === "login" ? (
+            <>
+              <Input 
+                type="text" 
+                placeholder="Nombre de Usuario" 
+                value={nombre_usuario} 
+                onChange={(e) => setNombre_Usuario(e.target.value)} 
+                page="login"
+              />
+              <Input 
+                type="password" 
+                placeholder="Contraseña" 
+                value={contraseña} 
+                onChange={(e) => setContraseña(e.target.value)} 
+                page="login"
+              />
+              <Button onClick={ingresar} text="Ingresar" />
+            </>
+          ) : (
+            <>
+              <Input 
+                type="text" 
+                placeholder="Nombre de usuario" 
+                value={nombre_usuario} 
+                onChange={(e) => setNombre_Usuario(e.target.value)} 
+                page="login"
+              />
+              <Input 
+                type="email" 
+                placeholder="Correo electrónico" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                page="login"
+              />
+              <Input 
+                type="password" 
+                placeholder="Contraseña" 
+                value={contraseña} 
+                onChange={(e) => setContraseña(e.target.value)} 
+                page="login"
+              />
+              <Input 
+                type="password" 
+                placeholder="Confirmar contraseña" 
+                value={confirmContraseña} 
+                onChange={(e) => setConfirmContraseña(e.target.value)} 
+                page="login"
+              />
+              <Button onClick={registrar} text="Registrarse" />
+            </>
+          )}
         </div>
       </div>
 
-      {mostrarMensaje && <div className={styles.mensaje}>{textoMensaje}</div>}
+      {/* Mensaje de notificación */}
+      {mostrarMensaje && (
+        <div className={styles.mensaje}>
+          {textoMensaje}
+        </div>
+      )}
     </div>
-  );
+  )
 }
