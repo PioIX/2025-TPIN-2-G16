@@ -248,7 +248,7 @@ ORDER BY jj.id_jugadorjuego ASC
             io.to(code).emit("updatePlayers", jugadores);
 
         } catch (err) {
-            console.error("Error al unirse a sala:", err);
+            console.error(" Error al unirse a sala:", err);
             socket.emit("errorRoom", "No se pudo unir a la sala");
         }
     });
@@ -285,7 +285,7 @@ SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juego = ${id_juego}
             io.to(code).emit("gameStart", { code });
 
         } catch (err) {
-            console.error("Error al iniciar juego:", err);
+            console.error(" Error al iniciar juego:", err);
             socket.emit("errorRoom", "No se pudo iniciar el juego");
         }
     });
