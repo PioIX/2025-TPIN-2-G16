@@ -35,25 +35,25 @@ export default function MenuPrincipal() {
     if (!socket) return
 
     socket.on("updatePlayers", (jugadores) => {
-      console.log("🔄 Actualización de jugadores recibida")
-      console.log("👥 Jugadores actuales:", jugadores)
+      console.log("Actualización de jugadores recibida")
+      console.log("Jugadores actuales:", jugadores)
       setJugadores(jugadores)
     })
 
     socket.on("gameStart", (data) => {
-      console.log("🚀 Recibido gameStart con code:", data.code)
+      console.log("Recibido gameStart con code:", data.code)
       router.push(`/juego?code=${data.code}`)
     })
 
     socket.on("roomCreated", (data) => {
-      console.log("✅ Sala creada con código:", data.code)
+      console.log("Sala creada con código:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setCreateRoomOpen(false)
     })
 
     socket.on("roomJoined", (data) => {
-      console.log("✅ Unido a sala:", data.code)
+      console.log("Unido a sala:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setJoinRoomOpen(false)

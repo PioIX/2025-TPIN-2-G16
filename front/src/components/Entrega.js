@@ -3,7 +3,7 @@
 import styles from "./Entrega.module.css"
 import { useRef, useEffect, useState } from "react";
 
-export default function Entrega() {
+export default function Entrega({showThanks, showNextButton}) {
   const [characterImage, setCharacterImage] = useState('');
   const [loading, setLoading] = useState(true);
   const [clienteNombre, setClienteNombre] = useState(''); // ✅ Ahora es estado

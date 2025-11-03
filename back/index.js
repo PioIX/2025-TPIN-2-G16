@@ -6,7 +6,7 @@ const session = require("express-session"); // Para el manejo de las variables d
 
 const { realizarQuery } = require('./modulos/mysql');
 
-var app = express(); //Inicializo express
+var app = express(); //Inicio express
 var port = process.env.PORT || 4000; //Ejecuto el servidor en el puerto 3000
 
 // Convierte una petición recibida (POST-GET...) a objeto JSON
@@ -143,7 +143,7 @@ VALUES (${id_jugador}, ${id_juego}, NULL)
             // Unir al socket a la sala
             socket.join(codigo);
 
-            console.log(`✅ Sala creada: ${codigo} por host ${id_jugador}`);
+            console.log(`Sala creada: ${codigo} por host ${id_jugador}`);
             socket.emit("roomCreated", { code: codigo, id_game: id_juego });
 
             // Obtener jugadores de la sala (por ahora solo el host)
@@ -164,13 +164,13 @@ WHERE jj.id_juego = ${id_juego}
 ORDER BY jj.id_jugadorjuego ASC
 `);
 
-            console.log("📤 Enviando jugadores:", JSON.stringify(jugadores, null, 2));
+            console.log("Enviando jugadores:", JSON.stringify(jugadores, null, 2));
 
             // Enviar a todos en la sala
             io.to(codigo).emit("updatePlayers", jugadores);
 
         } catch (err) {
-            console.error("❌ Error al crear sala:", err);
+            console.error("Error al crear sala:", err);
             socket.emit("errorRoom", "No se pudo crear la sala");
         }
     });
@@ -223,7 +223,7 @@ VALUES (${id_jugador}, ${id_juego}, NULL)
             // Unir al socket a la sala
             socket.join(code);
 
-            console.log(`✅ Jugador ${id_jugador} se unió a sala ${code}`);
+            console.log(`Jugador ${id_jugador} se unió a sala ${code}`);
             socket.emit("roomJoined", { code, id_game: id_juego });
 
             // Obtener todos los jugadores actualizados
@@ -248,7 +248,7 @@ ORDER BY jj.id_jugadorjuego ASC
             io.to(code).emit("updatePlayers", jugadores);
 
         } catch (err) {
-            console.error("❌ Error al unirse a sala:", err);
+            console.error("Error al unirse a sala:", err);
             socket.emit("errorRoom", "No se pudo unir a la sala");
         }
     });
@@ -285,7 +285,7 @@ SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juego = ${id_juego}
             io.to(code).emit("gameStart", { code });
 
         } catch (err) {
-            console.error("❌ Error al iniciar juego:", err);
+            console.error("Error al iniciar juego:", err);
             socket.emit("errorRoom", "No se pudo iniciar el juego");
         }
     });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState , useEffect} from 'react';
 import styles from "./page.module.css";
 import Pedido from "@/components/Pedido";
 import Cocina from "@/components/Cocina";
@@ -40,7 +40,7 @@ export default function JuegoContent() {
   // Inicializar personajes barajados al montar el componente
   useEffect(() => {
     const shuffled = shuffleArray(allClientes);
-    setCustomers(shuffled);
+    setClientes(shuffled);
   }, []);
 
   const handleGoToCocina = () => {
@@ -120,16 +120,11 @@ export default function JuegoContent() {
           <div className={styles.section}>
             <Entrega onNextCliente={handleNextCliente}
               currentCliente={currentClienteIndex + 1}
-              totalClientes={clientes.length} />
+              totalClientes={clientes.length}
+              showThanks={true} />
           </div>
         )}
       </div>
     </>
   );
-}
-
-export default function Juego() {
-return (
-<GameContent />
-);
 }
