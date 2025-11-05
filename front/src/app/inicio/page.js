@@ -24,7 +24,7 @@ export default function MenuPrincipal() {
 
   // Obtener el userId del sessionStorage
   useEffect(() => {
-    const id = sessionStorage.getItem("playerId")
+    const id = sessionStorage.getItem("jugadorId") // ← CORREGIDO
     if (id) {
       setUserId(parseInt(id))
     }
@@ -34,7 +34,7 @@ export default function MenuPrincipal() {
   useEffect(() => {
     if (!socket) return
 
-    socket.on("updatePlayers", (jugadores) => {
+    socket.on("updateJugadores", (jugadores) => { // ← YA ESTÁ BIEN
       console.log("Actualización de jugadores recibida")
       console.log("Jugadores actuales:", jugadores)
       setJugadores(jugadores)
@@ -42,7 +42,7 @@ export default function MenuPrincipal() {
 
     socket.on("gameStart", (data) => {
       console.log("Recibido gameStart con code:", data.code)
-      router.push(`/juego?code=${data.code}`)
+      router.push(`/Juego?code=${data.code}`)
     })
 
     socket.on("roomCreated", (data) => {
@@ -64,7 +64,7 @@ export default function MenuPrincipal() {
     })
 
     return () => {
-      socket.off("updatePlayers")
+      socket.off("updateJugadores") // ← YA ESTÁ BIEN
       socket.off("gameStart")
       socket.off("roomCreated")
       socket.off("roomJoined")
@@ -84,7 +84,7 @@ export default function MenuPrincipal() {
   function createRoom() {
     console.log("Crear sala")
 
-    const id_jugador = sessionStorage.getItem("playerId")
+    const id_jugador = sessionStorage.getItem("jugadorId") // ← CORREGIDO
 
     if (!id_jugador) {
       alert("No se encontró el ID del jugador")
@@ -97,7 +97,7 @@ export default function MenuPrincipal() {
   function joinRoom() {
     console.log("Unirse a sala:", codigo)
 
-    const id_jugador = sessionStorage.getItem("playerId")
+    const id_jugador = sessionStorage.getItem("jugadorId") // ← CORREGIDO
 
     if (!id_jugador) {
       alert("No se encontró el ID del jugador")

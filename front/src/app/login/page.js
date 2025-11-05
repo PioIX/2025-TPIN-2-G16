@@ -43,7 +43,7 @@ export default function RegistroYLogin() {
       console.log("Respuesta del servidor:", result)
       if (result.validar === true) {
         sessionStorage.setItem("jugadorId", result.id)
-        router.push("/juego");
+        router.push("/inicio");
       } else {
         showModal("Error", result.message || "Credenciales incorrectas");
       }
