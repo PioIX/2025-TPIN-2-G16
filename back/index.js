@@ -62,11 +62,13 @@ SELECT * FROM Jugadores WHERE nombre_usuario = "${req.body.nombre_usuario}" AND 
 });
 
 app.post('/registroUsuario', async function (req, res) {
-    console.log(req.body)
     try {
         const existingJugador = await realizarQuery(`
 SELECT * FROM Jugadores WHERE email = "${req.body.email}";
 `);
+
+        console.log("existingJugador: ", existingJugador)
+
         if (existingJugador.length > 0) {
             res.send({ res: false, message: "Ya existe un usuario con este email" });
             return;
