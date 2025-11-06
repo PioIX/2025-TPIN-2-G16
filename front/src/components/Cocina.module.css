@@ -1,78 +1,109 @@
+:root {
+    --primary-red: #FF6347;
+    --primary-dark-red: #DC143C;
+    --wood-brown: #8B4513;
+    --dark-wood: #654321;
+    --light-tan: #DEB887;
+    --gold: #FFD700;
+    --white: #ffffff;
+    --shadow-dark: rgba(0, 0, 0, 0.3);
+    --shadow-light: rgba(255, 255, 255, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 .container {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background-image: url('/imagenesFondo/FondoCocina.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
     flex-direction: column;
-    position: relative;
     font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive, sans-serif;
 }
 
-/* Header con estilo cartoon mejorado */
+/* ===== HEADER ===== */
 .header {
     width: 100%;
-    height: 70px;
+    min-height: 70px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 30px;
+    padding: 15px 30px;
     background: linear-gradient(180deg, rgba(255, 99, 71, 0.95) 0%, rgba(220, 70, 50, 0.95) 100%);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border-bottom: 4px solid #8B4513;
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    border-bottom: 4px solid var(--wood-brown);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
 }
 
 .percent,
 .order,
 .time {
-    width: 160px;
+    min-width: 140px;
     height: 50px;
     background: linear-gradient(145deg, #ffffff, #f0f0f0);
     border-radius: 15px;
-    border: 3px solid #8B4513;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2),
-                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    border: 3px solid var(--wood-brown);
+    box-shadow: 0 4px 8px var(--shadow-dark), inset 0 2px 4px var(--shadow-light);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
     color: #333;
-    font-size: 16px;
+    font-size: clamp(14px, 2vw, 16px);
+    padding: 5px 10px;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
 }
 
-/* Barra de ingredientes estilo vitrina */
+.percent:hover,
+.order:hover,
+.time:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-dark), inset 0 2px 4px var(--shadow-light);
+}
+
+/* ===== BARRA DE INGREDIENTES ===== */
 .ingredientsBox {
     width: 100%;
-    height: 120px;
+    min-height: 120px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    padding: 15px 30px;
-    background: linear-gradient(180deg, rgba(139, 69, 19, 0.85) 0%, rgba(101, 67, 33, 0.85) 100%);
-    border-top: 3px solid #654321;
-    border-bottom: 3px solid #654321;
-    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.3),
-                0 4px 10px rgba(0, 0, 0, 0.2);
+    gap: clamp(10px, 2vw, 20px);
+    padding: 15px 20px;
+    background: linear-gradient(180deg, rgba(139, 69, 19, 0.9) 0%, rgba(101, 67, 33, 0.9) 100%);
+    border-top: 3px solid var(--dark-wood);
+    border-bottom: 3px solid var(--dark-wood);
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4), 0 4px 10px var(--shadow-dark);
+    flex-wrap: wrap;
 }
 
 .ingredientBtn {
-    width: 90px;
-    height: 90px;
+    width: clamp(70px, 8vw, 90px);
+    height: clamp(70px, 8vw, 90px);
     background: linear-gradient(145deg, #ffffff, #f5f5f5);
-    border: 4px solid #8B4513;
+    border: 4px solid var(--wood-brown);
     border-radius: 15px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     padding: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
-                inset 0 2px 5px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 5px 15px var(--shadow-dark), inset 0 2px 5px var(--shadow-light);
     position: relative;
+    overflow: hidden;
 }
 
 .ingredientBtn::before {
@@ -83,26 +114,40 @@
     transform: translateX(-50%);
     width: 60%;
     height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
     border-radius: 2px;
 }
 
+.ingredientBtn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 40%, rgba(255, 215, 0, 0.3));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
 .ingredientBtn:hover:not(:disabled) {
-    transform: scale(1.15) translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6),
-                inset 0 2px 5px rgba(255, 255, 255, 0.8);
+    transform: scale(1.15) translateY(-5px) rotate(3deg);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.7), inset 0 2px 5px rgba(255, 255, 255, 0.9);
     background: linear-gradient(145deg, #fff, #fffacd);
-    border-color: #FFD700;
+    border-color: var(--gold);
+}
+
+.ingredientBtn:hover:not(:disabled)::after {
+    opacity: 1;
 }
 
 .ingredientBtn:active:not(:disabled) {
-    transform: scale(1.05) translateY(-1px);
+    transform: scale(1.05) translateY(-2px);
+    transition: all 0.1s ease;
 }
 
 .ingredientBtn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    filter: grayscale(50%);
+    filter: grayscale(70%);
+    transform: scale(0.95);
 }
 
 .ingredientBtn img {
@@ -110,9 +155,10 @@
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.2));
+    pointer-events: none;
 }
 
-/* Área principal */
+/* ===== ÁREA PRINCIPAL ===== */
 .mainArea {
     flex: 1;
     display: flex;
@@ -120,178 +166,218 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
+    gap: 30px;
 }
 
 .cookingZone {
-    width: 95%;
-    max-width: 1300px;
-    height: 520px;
-    position: relative;
+    width: 100%;
+    max-width: 1400px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: clamp(15px, 2vw, 30px);
+    flex-wrap: wrap;
+    padding: 20px;
 }
 
-/* Parrilla de carnes - estilo circular mejorado */
-.pattiesContainer {
-    width: 280px;
-    height: 450px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 18px;
-    padding: 25px;
-    background: linear-gradient(145deg, rgba(50, 50, 50, 0.7), rgba(30, 30, 30, 0.7));
-    border: 5px solid #444;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5),
-                inset 0 3px 8px rgba(255, 100, 0, 0.3);
-    position: relative;
-}
-
-.pattiesContainer::before {
-    content: 'PARRILLA';
+/* ===== ETIQUETAS DE SECCIÓN ===== */
+.section-label {
     position: absolute;
     top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #ff6347, #ff4500);
+    background: linear-gradient(135deg, var(--primary-red), #ff4500);
     color: white;
     padding: 5px 15px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: clamp(10px, 1.5vw, 12px);
     font-weight: bold;
-    border: 3px solid #8B4513;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    border: 3px solid var(--wood-brown);
+    box-shadow: 0 3px 10px var(--shadow-dark);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* ===== PARRILLA DE CARNES ===== */
+.pattiesContainer {
+    width: min(280px, 90vw);
+    min-height: 420px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: clamp(12px, 2vw, 18px);
+    padding: 30px 25px 25px;
+    background: linear-gradient(145deg, rgba(50, 50, 50, 0.85), rgba(30, 30, 30, 0.85));
+    border: 5px solid #444;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 3px 8px rgba(255, 100, 0, 0.4);
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+.pattiesContainer::before {
+    content: '🔥 PARRILLA';
+}
+
+.pattiesContainer::before,
+.bunsContainer::before {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary-red), #ff4500);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: clamp(10px, 1.5vw, 12px);
+    font-weight: bold;
+    border: 3px solid var(--wood-brown);
+    box-shadow: 0 3px 10px var(--shadow-dark);
+    z-index: 10;
 }
 
 .pattyBtn {
     width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(100, 100, 100, 0.6) 0%, rgba(60, 60, 60, 0.8) 100%);
-    border: 4px solid rgba(139, 69, 19, 0.7);
+    aspect-ratio: 1;
+    background: radial-gradient(circle at 30% 30%, rgba(120, 100, 80, 0.6), rgba(60, 50, 40, 0.9));
+    border: 4px solid rgba(139, 69, 19, 0.8);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background-image: url('/imagenesHamburguesa/Carne.png');
     background-size: 75%;
     background-position: center;
     background-repeat: no-repeat;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4),
-                inset 0 2px 6px rgba(255, 80, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 2px 6px rgba(255, 80, 0, 0.4);
+    position: relative;
 }
 
-.pattyBtn:hover {
-    transform: scale(1.1);
-    border-color: #FFD700;
-    box-shadow: 0 6px 15px rgba(255, 140, 0, 0.6),
-                inset 0 2px 8px rgba(255, 120, 0, 0.5);
-    background-color: rgba(120, 100, 80, 0.5);
+.pattyBtn::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
-.pattyBtn:active {
-    transform: scale(1.05);
+.pattyBtn:hover:not(.hidden) {
+    transform: scale(1.15) rotate(5deg);
+    border-color: var(--gold);
+    box-shadow: 0 8px 25px rgba(255, 140, 0, 0.7), inset 0 2px 8px rgba(255, 120, 0, 0.6);
+    background-color: rgba(140, 110, 80, 0.6);
+}
+
+.pattyBtn:hover:not(.hidden)::before {
+    opacity: 0.6;
+    animation: rotate 2s linear infinite;
+}
+
+.pattyBtn:active:not(.hidden) {
+    transform: scale(1.05) rotate(2deg);
 }
 
 .pattyBtn.hidden {
     visibility: hidden;
+    pointer-events: none;
 }
 
-/* Contenedor de panes - estilo mejorado */
+/* ===== CONTENEDOR DE PANES ===== */
 .bunsContainer {
-    width: 380px;
-    height: 450px;
+    width: min(380px, 90vw);
+    min-height: 420px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 12px;
-    padding: 25px;
-    background: linear-gradient(145deg, rgba(222, 184, 135, 0.6), rgba(184, 134, 11, 0.6));
-    border: 5px solid #8B4513;
+    gap: clamp(8px, 1.5vw, 12px);
+    padding: 30px 25px 25px;
+    background: linear-gradient(145deg, rgba(222, 184, 135, 0.7), rgba(184, 134, 11, 0.7));
+    border: 5px solid var(--wood-brown);
     border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4),
-                inset 0 3px 8px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 3px 8px rgba(255, 255, 255, 0.3);
     position: relative;
+    backdrop-filter: blur(5px);
 }
 
 .bunsContainer::before {
-    content: ' PANES';
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #DEB887, #D2691E);
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    border: 3px solid #8B4513;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    content: '🍔 PANES';
+    background: linear-gradient(135deg, var(--light-tan), #D2691E);
 }
 
 .bunBtn {
     width: 100%;
-    height: 100%;
-    background: linear-gradient(145deg, rgba(255, 248, 220, 0.9), rgba(255, 228, 181, 0.9));
-    border: 3px solid rgba(139, 69, 19, 0.7);
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, rgba(255, 248, 220, 0.95), rgba(255, 228, 181, 0.95));
+    border: 3px solid rgba(139, 69, 19, 0.8);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background-image: url('/imagenesHamburguesa/PanAbajoHamburguesa.png');
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3),
-                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px var(--shadow-dark), inset 0 2px 4px var(--shadow-light);
+    position: relative;
+    overflow: hidden;
 }
 
-.bunBtn:hover {
-    transform: scale(1.1);
-    border-color: #FFD700;
-    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5),
-                inset 0 2px 6px rgba(255, 255, 255, 0.7);
-    background-color: rgba(255, 250, 205, 1);
+.bunBtn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.bunBtn:active {
+.bunBtn:hover:not(.hidden) {
+    transform: scale(1.15) rotate(-3deg);
+    border-color: var(--gold);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6), inset 0 2px 6px rgba(255, 255, 255, 0.8);
+    background-color: #fffacd;
+}
+
+.bunBtn:hover:not(.hidden)::after {
+    opacity: 1;
+}
+
+.bunBtn:active:not(.hidden) {
     transform: scale(1.05);
 }
 
 .bunBtn.hidden {
     visibility: hidden;
+    pointer-events: none;
 }
 
-/* Tabla de cortar mejorada - estilo profesional */
+/* ===== TABLA DE CORTAR ===== */
 .cuttingBoard {
-    width: 420px;
-    height: 500px;
-    background: linear-gradient(145deg, rgba(139, 69, 19, 0.5), rgba(101, 67, 33, 0.6));
-    border: 6px solid #654321;
+    width: min(420px, 90vw);
+    min-height: 480px;
+    background: linear-gradient(145deg, rgba(139, 69, 19, 0.6), rgba(101, 67, 33, 0.7));
+    border: 6px solid var(--dark-wood);
     border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
-                inset 0 3px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 3px 15px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(5px);
 }
 
 .cuttingBoard::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: repeating-linear-gradient(
         90deg,
         transparent,
         transparent 40px,
-        rgba(101, 67, 33, 0.2) 40px,
-        rgba(101, 67, 33, 0.2) 42px
+        rgba(101, 67, 33, 0.3) 40px,
+        rgba(101, 67, 33, 0.3) 42px
     );
     pointer-events: none;
 }
@@ -299,49 +385,52 @@
 .cuttingBoard::after {
     content: '📋 ARMADO';
     position: absolute;
-    top: 10px;
+    top: 15px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #8B4513, #654321);
+    background: linear-gradient(135deg, var(--wood-brown), var(--dark-wood));
     color: white;
-    padding: 5px 15px;
+    padding: 6px 16px;
     border-radius: 15px;
-    font-size: 11px;
+    font-size: clamp(10px, 1.5vw, 12px);
     font-weight: bold;
-    border: 2px solid #FFD700;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-    z-index: 1;
+    border: 2px solid var(--gold);
+    box-shadow: 0 3px 10px var(--shadow-dark);
+    z-index: 10;
 }
 
 .hamburgerCanvas {
     width: 100%;
     height: 100%;
     image-rendering: crisp-edges;
-    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4));
 }
 
-/* Botones de acción mejorados */
+/* ===== BOTONES DE ACCIÓN ===== */
 .btns {
-    margin-top: 30px;
+    margin-top: 20px;
     display: flex;
-    gap: 25px;
+    gap: clamp(15px, 3vw, 30px);
     justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 20px;
 }
 
 .bake,
 .reset {
-    padding: 18px 50px;
-    font-size: 20px;
+    padding: clamp(14px, 2vw, 18px) clamp(35px, 5vw, 50px);
+    font-size: clamp(16px, 2vw, 20px);
     font-weight: bold;
     border: none;
     border-radius: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     text-transform: uppercase;
     letter-spacing: 2px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px var(--shadow-dark);
     position: relative;
     overflow: hidden;
+    min-width: 140px;
 }
 
 .bake::before,
@@ -353,136 +442,162 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    transition: width 0.6s ease, height 0.6s ease;
 }
 
 .bake:hover::before,
 .reset:hover::before {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
 }
 
 .bake {
-    background: linear-gradient(135deg, #FF6347, #FF4500);
+    background: linear-gradient(135deg, var(--primary-red), #FF4500);
     color: white;
-    border: 3px solid #8B4513;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    border: 3px solid var(--wood-brown);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .bake:hover {
-    background: linear-gradient(135deg, #FF4500, #DC143C);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 69, 0, 0.5);
+    background: linear-gradient(135deg, #FF4500, var(--primary-dark-red));
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 69, 0, 0.6);
 }
 
 .bake:active {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.4);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 15px rgba(255, 69, 0, 0.5);
 }
 
 .reset {
     background: linear-gradient(135deg, #4CAF50, #45a049);
     color: white;
     border: 3px solid #2E7D32;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .reset:hover {
     background: linear-gradient(135deg, #45a049, #388E3C);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.6);
 }
 
 .reset:active {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
 }
 
-/* Animaciones adicionales */
+/* ===== ANIMACIONES ===== */
 @keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
 }
 
 .pattyBtn:not(.hidden),
 .bunBtn:not(.hidden) {
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 3s ease-in-out infinite;
 }
 
-/* Responsive mejorado */
-@media (max-width: 1024px) {
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
     .cookingZone {
         flex-direction: column;
-        height: auto;
         gap: 25px;
-        padding: 20px 0;
-    }
-
-    .pattiesContainer,
-    .bunsContainer,
-    .cuttingBoard {
-        width: 90%;
-        max-width: 450px;
-    }
-
-    .pattiesContainer::before,
-    .bunsContainer::before {
-        font-size: 11px;
-        padding: 4px 12px;
     }
 }
 
 @media (max-width: 768px) {
     .header {
-        height: 60px;
-        padding: 0 15px;
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
     }
 
     .percent,
     .order,
     .time {
-        width: 120px;
+        min-width: 110px;
         height: 45px;
-        font-size: 14px;
     }
 
     .ingredientsBox {
-        gap: 12px;
-        padding: 10px 15px;
-        height: 100px;
-    }
-
-    .ingredientBtn {
-        width: 70px;
-        height: 70px;
-    }
-
-    .bunsContainer {
-        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
-        padding: 20px;
+        padding: 12px 15px;
+        min-height: 100px;
+    }
+
+    .pattiesContainer,
+    .bunsContainer {
+        padding: 30px 20px 20px;
+    }
+
+    .cuttingBoard {
+        min-height: 400px;
+    }
+
+    .btns {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 8px 10px;
+    }
+
+    .percent,
+    .order,
+    .time {
+        min-width: 90px;
+        height: 40px;
+        font-size: 12px;
+    }
+
+    .ingredientsBox {
+        gap: 8px;
+        padding: 10px;
     }
 
     .pattiesContainer {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        padding: 20px;
+        gap: 10px;
     }
 
-    .bake,
-    .reset {
-        padding: 15px 35px;
-        font-size: 16px;
+    .bunsContainer {
+        gap: 6px;
     }
+}
 
-    .cuttingBoard::after {
-        font-size: 10px;
-        padding: 4px 10px;
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===== DARK MODE (OPCIONAL) ===== */
+@media (prefers-color-scheme: dark) {
+    .percent,
+    .order,
+    .time {
+        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+        color: #fff;
+        border-color: var(--gold);
     }
 }
