@@ -127,6 +127,154 @@
   transform: scale(1.05);
 }
 
+/* ========================================
+   ESTILOS PARA POPUPS DE CREAR/UNIRSE A SALA
+   ======================================== */
+
+.modal {
+  background: linear-gradient(135deg, #2c4a4a 0%, #1a2f2f 100%);
+  border-radius: 20px;
+  padding: 0;
+  width: 450px;
+  max-width: 90vw;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+  border: 5px solid #f4a261;
+  overflow: hidden;
+  animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.header {
+  background: linear-gradient(135deg, #f4a261 0%, #e59350 100%);
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 4px solid #d68342;
+}
+
+.header h2 {
+  color: #1a2f2f;
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.content {
+  padding: 2rem 2rem 2.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.content p {
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  border: 3px solid #f4a261;
+  border-radius: 12px;
+  background: rgba(26, 47, 47, 0.8);
+  color: #f4a261;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #e59350;
+  background: rgba(26, 47, 47, 0.95);
+  box-shadow: 0 0 0 4px rgba(244, 162, 97, 0.3),
+              inset 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.input::placeholder {
+  color: rgba(244, 162, 97, 0.5);
+  letter-spacing: 3px;
+}
+
+.actions {
+  display: flex;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(15, 23, 42, 0.6);
+  border-top: 3px solid #f4a261;
+}
+
+.joinBtn,
+.createBtn {
+  flex: 1;
+  background: linear-gradient(135deg, #f4a261 0%, #e59350 100%);
+  color: #1a2f2f;
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding: 1rem;
+  border: 3px solid #d68342;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(244, 162, 97, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.joinBtn:hover,
+.createBtn:hover {
+  background: linear-gradient(135deg, #e59350 0%, #d68342 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(244, 162, 97, 0.6);
+}
+
+.cancelBtn {
+  flex: 1;
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding: 1rem;
+  border: 3px solid #1f2937;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(75, 85, 99, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cancelBtn:hover {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(75, 85, 99, 0.6);
+}
+
+.joinBtn:active,
+.createBtn:active,
+.cancelBtn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .juegoButton {
     min-width: 300px;
@@ -148,5 +296,26 @@
 
   .modalText {
     font-size: 1rem;
+  }
+
+  .modal {
+    width: 95vw;
+  }
+
+  .header h2 {
+    font-size: 1.5rem;
+  }
+
+  .content {
+    padding: 1.5rem;
+  }
+
+  .input {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+
+  .actions {
+    flex-direction: column;
   }
 }
