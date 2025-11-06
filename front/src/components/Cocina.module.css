@@ -151,7 +151,7 @@
 }
 
 .pattiesContainer::before {
-    content: '🔥 PARRILLA';
+    content: 'PARRILLA';
     position: absolute;
     top: -15px;
     left: 50%;
@@ -216,7 +216,7 @@
 }
 
 .bunsContainer::before {
-    content: '🍔 PANES';
+    content: ' PANES';
     position: absolute;
     top: -15px;
     left: 50%;
