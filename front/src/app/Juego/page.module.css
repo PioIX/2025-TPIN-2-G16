@@ -135,4 +135,243 @@
   }
 }
 
+/* ⏱️ ESTILOS DEL TIMER - Agregar al archivo page.module.css */
 
+/* Timer Display (arriba de la pantalla durante el juego) */
+.timerDisplay {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.timerIcon {
+  font-size: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.timerText {
+  font-size: 28px;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+.clienteCounter {
+  font-size: 14px;
+  opacity: 0.9;
+  padding-left: 12px;
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 🏆 PANTALLA DE RESULTADOS */
+.resultsScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.resultsTitle {
+  font-size: 48px;
+  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  animation: bounceIn 1s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.resultsCard {
+  background: white;
+  border-radius: 20px;
+  padding: 50px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin-bottom: 40px;
+  animation: slideUp 0.8s ease-out 0.3s both;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  min-width: 400px;
+}
+
+.statLabel {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.statValue {
+  font-size: 36px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.statValueTime {
+  font-size: 48px;
+  font-weight: bold;
+  color: #764ba2;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 3px;
+}
+
+.backToStartBtn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  padding: 18px 50px;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+  transition: all 0.3s ease;
+  animation: slideUp 0.8s ease-out 0.6s both;
+}
+
+.backToStartBtn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(245, 87, 108, 0.6);
+}
+
+.backToStartBtn:active {
+  transform: translateY(-2px);
+}
+
+/* Loading Screen */
+.loadingScreen {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loadingScreen h2 {
+  color: white;
+  font-size: 32px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .timerDisplay {
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+  
+  .timerText {
+    font-size: 20px;
+  }
+  
+  .clienteCounter {
+    font-size: 12px;
+  }
+  
+  .resultsTitle {
+    font-size: 32px;
+  }
+  
+  .resultsCard {
+    padding: 30px;
+  }
+  
+  .statItem {
+    min-width: 300px;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .statValueTime {
+    font-size: 36px;
+  }
+  
+  .backToStartBtn {
+    padding: 14px 40px;
+    font-size: 18px;
+  }
+}
