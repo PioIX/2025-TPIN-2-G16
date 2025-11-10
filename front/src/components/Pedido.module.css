@@ -1,85 +1,107 @@
 .canvas {
-display: block;
-width: 100%;
-height: 100%;
-margin: 0;
-padding: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .dialogContainer {
-position: absolute;
-top: 20%;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 20px;
-animation: fadeIn 0.5s ease-in-out;
+  position: absolute;
+  top: 15%;
+  left: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .dialogBubble {
-background-color: #2b2a39;
-padding: 25px 30px;
-border-radius: 25px;
-box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-max-width: 350px;
-font-family: Arial, sans-serif;
-border: 3px solid #000000;
+  background-color: #f4a261;
+  padding: 15px 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  max-width: 280px;
+  font-family: Arial, sans-serif;
+  border: 3px solid #1a2f2f;
+  position: relative;
+}
+
+/* Flecha del bocadillo apuntando hacia abajo */
+.dialogBubble::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #f4a261;
+}
+
+.dialogBubble::before {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+  border-top: 17px solid #1a2f2f;
+  z-index: -1;
 }
 
 .dialogText {
-margin: 0;
-font-size: 20px;
-color: #ffffff;
-line-height: 1.4;
-text-align: center;
-font-weight: 500;
+  margin: 0;
+  font-size: 16px;
+  color: #1a2f2f;
+  line-height: 1.4;
+  text-align: left;
+  font-weight: 500;
 }
 
-/* Contenedor de botones */
+/* Contenedor de botones - ABAJO DEL TODO */
 .btns {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 10px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  z-index: 100;
 }
 
-/* Estilo del botón */
+/* Estilo del botón OK */
 .bake {
-background-color: #E8DCC8;
-color: #5C5C5C;
-border: none;
-border-radius: 12px;
-padding: 12px 40px;
-font-size: 18px;
-font-weight: 600;
-cursor: pointer;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-transition: all 0.2s ease;
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #db6e15; /* Azul principal */
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 60px;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 20px #c2916a(0, 119, 182, 0.4);
+  transition: all 0.3s ease;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* Efecto hover */
 .bake:hover {
-background-color: #DED0B6;
-transform: translateY(-2px);
-box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  background-color: #f17f21; /* Azul más claro al pasar el mouse */
+  transform: scale(1.08);
+  box-shadow: 0 0 25px #c47432(0, 180, 216, 0.6);
 }
 
 /* Efecto al presionar */
 .bake:active {
-transform: translateY(0);
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-@keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateX(-50%) translateY(-10px);
-}
-to {
-opacity: 1;
-transform: translateX(-50%) translateY(0);
-}
+  transform: scale(0.96);
+  background-color: #e96e09; /* Azul más oscuro al hacer clic */
 }
