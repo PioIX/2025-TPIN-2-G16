@@ -1,13 +1,13 @@
 'use client';
 
-import { useState , useEffect} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from "./page.module.css";
 import Pedido from "@/components/Pedido";
 import Cocina from "@/components/Cocina";
 import Entrega from "@/components/Entrega";
 
 export default function JuegoContent() {
-  const [showPedido, setShowPedido] = useState(false);
+  const [showPedido, setShowPedido] = useState(true); // ✅ Cambié a true
   const [showCocina, setShowCocina] = useState(false);
   const [showEntrega, setShowEntrega] = useState(false);
 
@@ -15,6 +15,12 @@ export default function JuegoContent() {
   const [clientes, setClientes] = useState([]);
   const [currentClienteIndex, setCurrentClienteIndex] = useState(0);
   const [juegoFinished, setJuegoFinished] = useState(false);
+
+  // ⏱️ Sistema de Timer
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [finalTime, setFinalTime] = useState(0);
+  const timerIntervalRef = useRef(null);
 
   const allClientes = [
     { id: 1, nombre: 'Personaje 1' },
@@ -27,7 +33,7 @@ export default function JuegoContent() {
     { id: 8, nombre: 'Personaje 8' }
   ];
 
-  // Función para barajar el array
+  
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -37,91 +43,261 @@ export default function JuegoContent() {
     return shuffled;
   };
 
-  // Inicializar personajes barajados al montar el componente
+
   useEffect(() => {
     const shuffled = shuffleArray(allClientes);
     setClientes(shuffled);
   }, []);
 
+  // ⏱️ Iniciar timer cuando se muestra el PRIMER pedido
+  useEffect(() => {
+    if (showPedido && !timerStarted && currentClienteIndex === 0) {
+      console.log("🕐 Timer iniciado - Primer pedido cargado");
+      startTimer();
+    }
+  }, [showPedido, timerStarted, currentClienteIndex]);
+
+  // ⏱️ Funciones del Timer
+  const startTimer = () => {
+    if (timerIntervalRef.current) return;
+    
+    setTimerStarted(true);
+    setElapsedTime(0);
+    
+    timerIntervalRef.current = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+      console.log("⏹️ Timer detenido");
+    }
+  };
+
+  const resetTimer = () => {
+    stopTimer();
+    setElapsedTime(0);
+    setFinalTime(0);
+    setTimerStarted(false);
+  };
+
+  const formatTime = (seconds = elapsedTime) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, []);
+
   const handleGoToCocina = () => {
     console.log("Cambiando a Kitchen");
+    setShowPedido(false);
     setShowCocina(true);
   };
 
   const handleGoToEntrega = (imageData) => {
-    console.log("Cambiando a Entrega con imagen:", imageData);
-    //setHamburguesaImage(imageData);
+    console.log("Cambiando a Entrega");
     setShowCocina(false);
     setShowEntrega(true);
   };
 
-  // Función para pasar al siguiente personaje o terminar el juego
+  
   const handleNextCliente = () => {
     const nextIndex = currentClienteIndex + 1;
 
     if (nextIndex >= clientes.length) {
-      // Ya pasaron los 8 personajes, terminar el juego y DETENER EL TIMER
-      console.log("¡Juego terminado! Han pasado todos los personajes");
+      console.log("🏁 ¡Juego terminado!");
       stopTimer();
+      setFinalTime(elapsedTime);
       setJuegoFinished(true);
     } else {
-      // Resetear estados y pasar al siguiente personaje
-      console.log(`Pasando al personaje ${nextIndex + 1} de ${customers.length}`);
+      console.log(`Pasando al personaje ${nextIndex + 1}`);
       setCurrentClienteIndex(nextIndex);
       setShowCocina(false);
       setShowEntrega(false);
+      setShowPedido(true);
     }
   };
 
-  // Si no hay personajes cargados aún, mostrar loading
-  if (clientes.length === 0) {
-    return <div className={styles.container1}>Cargando...</div>;
-  }
-
-  // Si el juego terminó, mostrar pantalla final
-  if (juegoFinished) {
+    if (clientes.length === 0) {
     return (
       <div className={styles.container1}>
-        <div className={styles.section}>
-          <h1>¡Juego Terminado!</h1>
-          <p>Han pasado los 8 personajes</p>
-          <p>Tiempo total: {formatTime()}</p>
-          <button onClick={() => {
-            resetTimer();
-            window.location.reload();
-          }}>
-            Jugar de nuevo
-          </button>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontSize: '32px'
+        }}>
+          Cargando juego...
         </div>
       </div>
     );
   }
 
-  const currentCliente = clientes[currentClienteIndex];
+  // 🏆 Pantalla de Resultados
+  if (juegoFinished) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '40px'
+      }}>
+        <h1 style={{
+          fontSize: '48px',
+          color: 'white',
+          textAlign: 'center',
+          marginBottom: '40px'
+        }}>
+          🎉 ¡Juego Completado! 🎉
+        </h1>
+        
+        <div style={{
+          background: 'white',
+          borderRadius: '20px',
+          padding: '50px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          marginBottom: '40px'
+        }}>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '30px'}}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '20px',
+              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+              borderRadius: '12px',
+              minWidth: '400px'
+            }}>
+              <span style={{fontSize: '20px', fontWeight: '600', color: '#333'}}>
+                Clientes atendidos:
+              </span>
+              <span style={{fontSize: '36px', fontWeight: 'bold', color: '#667eea'}}>
+                {clientes.length}
+              </span>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '20px',
+              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+              borderRadius: '12px'
+            }}>
+              <span style={{fontSize: '20px', fontWeight: '600', color: '#333'}}>
+                Tiempo total:
+              </span>
+              <span style={{
+                fontSize: '48px',
+                fontWeight: 'bold',
+                color: '#764ba2',
+                fontFamily: 'Courier New, monospace',
+                letterSpacing: '3px'
+              }}>
+                {formatTime(finalTime)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          style={{
+            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '18px 50px',
+            fontSize: '22px',
+            fontWeight: 'bold',
+            borderRadius: '50px',
+            cursor: 'pointer',
+            boxShadow: '0 10px 30px rgba(245,87,108,0.4)'
+          }}
+          onClick={() => {
+            resetTimer();
+            setCurrentClienteIndex(0);
+            setJuegoFinished(false);
+            setShowPedido(true);
+            setShowCocina(false);
+            setShowEntrega(false);
+            const shuffled = shuffleArray(allClientes);
+            setClientes(shuffled);
+          }}
+        >
+          🏠 Volver al Inicio
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
+      {timerStarted && !juegoFinished && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: '50px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          fontWeight: 'bold',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          zIndex: 1000
+        }}>
+          <span style={{fontSize: '24px'}}>⏱️</span>
+          <span style={{fontSize: '28px', letterSpacing: '2px', fontFamily: 'Courier New, monospace'}}>
+            {formatTime()}
+          </span>
+          <span style={{fontSize: '14px', opacity: 0.9, paddingLeft: '12px', borderLeft: '2px solid rgba(255,255,255,0.5)'}}>
+            Cliente {currentClienteIndex + 1}/{clientes.length}
+          </span>
+        </div>
+      )}
+
       <div className={styles.container1}>
-        {!showEntrega ? (
-          !showCocina ? (
-            <>
-              <div className={styles.section}>
-                <Pedido key={Date.now()} onGoToCocina={handleGoToCocina} />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={styles.section}>
-                <Cocina onGoToEntrega={handleGoToEntrega} />
-              </div>
-            </>
-          )
-        ) : (
+        {showPedido && (
           <div className={styles.section}>
-            <Entrega onNextCliente={handleNextCliente}
+            <Pedido 
+              key={`pedido-${currentClienteIndex}`} 
+              onGoToCocina={handleGoToCocina} 
+            />
+          </div>
+        )}
+        
+        {showCocina && (
+          <div className={styles.section}>
+            <Cocina onGoToEntrega={handleGoToEntrega} />
+          </div>
+        )}
+        
+        {showEntrega && (
+          <div className={styles.section}>
+            <Entrega 
+              onNextCliente={handleNextCliente}
               currentCliente={currentClienteIndex + 1}
               totalClientes={clientes.length}
-              showThanks={true} />
+              showThanks={true}
+              showNextButton={true}
+            />
           </div>
         )}
       </div>

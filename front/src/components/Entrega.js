@@ -3,12 +3,18 @@
 import styles from "./Entrega.module.css"
 import { useRef, useEffect, useState } from "react";
 
-export default function Entrega({showThanks, showNextButton}) {
+export default function Entrega({
+  onNextCliente, 
+  currentCliente, 
+  totalClientes, 
+  showThanks, 
+  showNextButton
+}) {
   const [characterImage, setCharacterImage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [clienteNombre, setClienteNombre] = useState(''); // ✅ Ahora es estado
+  const [clienteNombre, setClienteNombre] = useState('');
 
-  // ✅ localStorage solo dentro de useEffect (lado del cliente)
+  
   useEffect(() => {
     const nombre = localStorage.getItem('currentClienteNombre');
     setClienteNombre(nombre);
@@ -27,7 +33,7 @@ export default function Entrega({showThanks, showNextButton}) {
     };
 
     fetchPedido();
-  }, []); // Se ejecuta una sola vez al montar
+  }, []);
 
   const canvasRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState({
@@ -46,8 +52,8 @@ export default function Entrega({showThanks, showNextButton}) {
       setImagesLoaded(prev => ({ ...prev, background: true }));
     };
     bgImg.onerror = () => {
-      console.error('Error cargando fondo');
-      setImagesLoaded(prev => ({ ...prev, background: false }));
+   
+     console.error('Error cargando fondo');
     };
     bgImg.src = '/imagenesFondo/hamburgeseria.png';
 
@@ -58,8 +64,7 @@ export default function Entrega({showThanks, showNextButton}) {
         setImagesLoaded(prev => ({ ...prev, character: true }));
       };
       charImg.onerror = () => {
-        console.error('Error cargando personaje');
-        setImagesLoaded(prev => ({ ...prev, character: false }));
+      console.error('Error cargando personaje');
       };
       charImg.src = characterImage;
     }
@@ -108,7 +113,7 @@ export default function Entrega({showThanks, showNextButton}) {
 
     const handleResize = () => {
       if (!canvas) return;
-
+  
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
@@ -119,7 +124,7 @@ export default function Entrega({showThanks, showNextButton}) {
     };
 
     handleResize();
-
+   
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [imagesLoaded]);
@@ -132,40 +137,26 @@ export default function Entrega({showThanks, showNextButton}) {
 
   return (
     <div className={styles.oContainer}>
-      <div className={styles.header}>
-        <div className={styles.percent}></div>
-        <div className={styles.order}></div>
-        <div className={styles.time}></div>
-      </div>
-      <canvas
-        ref={canvasRef}
-        className={styles.canvas}
-      />
+      <canvas ref={canvasRef} className={styles.canvas} />
 
       {showThanks && (
         <div className={styles.dialogContainer}>
           <div className={styles.dialogBubble}>
-            <p className={styles.dialogText}>
-              ¡Gracias!
-            </p>
+            <p className={styles.dialogText}>¡Gracias!</p>
           </div>
         </div>
       )}
 
       {showNextButton && (
         <div className={styles.nextButtonContainer}>
-          <button
-            className={styles.nextButton}
-            onClick={handleNextCliente}
-          >
+          <button className={styles.nextButton} onClick={handleNextCliente}>
             {currentCliente < totalClientes
-              ? `Siguiente cliente`
-              : '¡Terminar juego!'
-            }
+              ? `Siguiente cliente (${currentCliente}/${totalClientes})`
+              : '¡Terminar juego!'}
           </button>
         </div>
       )}
-
+  
     </div>
   );
 }
