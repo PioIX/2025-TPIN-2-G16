@@ -28,7 +28,7 @@
 
 .buttonsContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 2rem;
   align-items: center;
   position: absolute;
@@ -127,9 +127,7 @@
   transform: scale(1.05);
 }
 
-/* ========================================
-   ESTILOS PARA POPUPS DE CREAR/UNIRSE A SALA
-   ======================================== */
+/*ESTILOS PARA POPUPS DE CREAR/UNIRSE A SALA*/
 
 .modal {
   background: linear-gradient(135deg, #2c4a4a 0%, #1a2f2f 100%);
@@ -276,14 +274,15 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .buttonsContainer {
+    flex-direction: column;
+    bottom: 10%;
+  }
+
   .juegoButton {
     min-width: 300px;
     font-size: 1.4rem;
     padding: 1.2rem 2.5rem;
-  }
-
-  .buttonsContainer {
-    bottom: 10%;
   }
 
   .modalContent {
