@@ -7,7 +7,7 @@ import styles from "./lobby.module.css";
 export default function Lobby({ codigo, jugadores = [], socket }) {
   // Obtener userId directamente del sessionStorage
   const userId = typeof window !== 'undefined' 
-    ? parseInt(sessionStorage.getItem("playerId")) 
+    ? parseInt(sessionStorage.getItem("jugadorId")) 
     : null;
 
   useEffect(() => {

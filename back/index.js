@@ -136,11 +136,11 @@ VALUES ('${codigo}')
             const id_juego = result.insertId;
 
             // Insertar al host en JugadoresJuego (el primer jugador será el host)
-            const queryPlayer = `
+            const queryJugador = `
 INSERT INTO JugadoresJuego (id_jugador, id_juego, id_result)
 VALUES (${id_jugador}, ${id_juego}, NULL)
 `;
-            await realizarQuery(queryPlayer);
+            await realizarQuery(queryJugador);
 
             // Unir al socket a la sala
             socket.join(codigo);
@@ -169,7 +169,7 @@ ORDER BY jj.id_jugadorjuego ASC
             console.log("Enviando jugadores:", JSON.stringify(jugadores, null, 2));
 
             // Enviar a todos en la sala
-            io.to(codigo).emit("updatePlayers", jugadores);
+            io.to(codigo).emit("updateJugadores", jugadores);
 
         } catch (err) {
             console.error("Error al crear sala:", err);
@@ -216,11 +216,11 @@ WHERE id_juego = ${id_juego} AND id_jugador = ${id_jugador}
             }
 
             // Insertar al jugador en la sala
-            const queryPlayer = `
+            const queryJugador = `
 INSERT INTO JugadoresJuego (id_jugador, id_juego, id_result)
 VALUES (${id_jugador}, ${id_juego}, NULL)
 `;
-            await realizarQuery(queryPlayer);
+            await realizarQuery(queryJugador);
 
             // Unir al socket a la sala
             socket.join(code);
@@ -247,7 +247,7 @@ ORDER BY jj.id_jugadorjuego ASC
 `);
 
             // Notificar a todos en la sala
-            io.to(code).emit("updatePlayers", jugadores);
+            io.to(code).emit("updateJugadores", jugadores);
 
         } catch (err) {
             console.error(" Error al unirse a sala:", err);
