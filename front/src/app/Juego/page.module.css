@@ -142,23 +142,24 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ea9666 0%, #a2754b 100%);
   color: white;
-  padding: 12px 24px;
+  padding: 15px 30px;
   border-radius: 50px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-family: 'Arial', sans-serif;
+  gap: 15px;
   font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 25px rgba(234, 166, 102, 0.5);
   z-index: 1000;
-  animation: slideInFromRight 0.5s ease-out;
+  animation: slideInFromRight 0.6s ease-out;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 @keyframes slideInFromRight {
   from {
-    transform: translateX(100px);
+    transform: translateX(120px);
     opacity: 0;
   }
   to {
@@ -168,179 +169,69 @@
 }
 
 .timerIcon {
-  font-size: 24px;
-  animation: pulse 2s ease-in-out infinite;
+  font-size: 28px;
+  animation: pulseIcon 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-@keyframes pulse {
+@keyframes pulseIcon {
   0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.1);
+    transform: scale(1.15);
   }
 }
 
 .timerText {
-  font-size: 28px;
-  letter-spacing: 2px;
+  font-size: 32px;
+  letter-spacing: 3px;
   font-family: 'Courier New', monospace;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .clienteCounter {
-  font-size: 14px;
-  opacity: 0.9;
-  padding-left: 12px;
-  border-left: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-/* 🏆 PANTALLA DE RESULTADOS */
-.resultsScreen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.resultsTitle {
-  font-size: 48px;
-  color: white;
-  text-align: center;
-  margin-bottom: 40px;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-  animation: bounceIn 1s ease-out;
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.resultsCard {
-  background: white;
-  border-radius: 20px;
-  padding: 50px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  margin-bottom: 40px;
-  animation: slideUp 0.8s ease-out 0.3s both;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.statsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.statItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 12px;
-  min-width: 400px;
-}
-
-.statLabel {
-  font-size: 20px;
+  font-size: 15px;
+  opacity: 0.95;
+  padding-left: 15px;
+  border-left: 2px solid rgba(255, 255, 255, 0.6);
+  font-family: Arial, sans-serif;
   font-weight: 600;
-  color: #333;
 }
 
-.statValue {
-  font-size: 36px;
-  font-weight: bold;
-  color: #667eea;
-}
-
-.statValueTime {
-  font-size: 48px;
-  font-weight: bold;
-  color: #764ba2;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 3px;
-}
-
-.backToStartBtn {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  border: none;
-  padding: 18px 50px;
-  font-size: 22px;
-  font-weight: bold;
-  border-radius: 50px;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
-  transition: all 0.3s ease;
-  animation: slideUp 0.8s ease-out 0.6s both;
-}
-
-.backToStartBtn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(245, 87, 108, 0.6);
-}
-
-.backToStartBtn:active {
-  transform: translateY(-2px);
-}
-
-/* Loading Screen */
-.loadingScreen {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.loadingScreen h2 {
-  color: white;
-  font-size: 32px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* Responsive */
+/* Responsive para el timer */
 @media (max-width: 768px) {
   .timerDisplay {
     top: 10px;
     right: 10px;
+    padding: 10px 20px;
+    gap: 10px;
+  }
+  
+  .timerIcon {
+    font-size: 22px;
+  }
+  
+  .timerText {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+  
+  .clienteCounter {
+    font-size: 12px;
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timerDisplay {
     padding: 8px 16px;
     gap: 8px;
+  }
+  
+  .timerIcon {
+    font-size: 20px;
   }
   
   .timerText {
@@ -348,30 +239,6 @@
   }
   
   .clienteCounter {
-    font-size: 12px;
-  }
-  
-  .resultsTitle {
-    font-size: 32px;
-  }
-  
-  .resultsCard {
-    padding: 30px;
-  }
-  
-  .statItem {
-    min-width: 300px;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-  
-  .statValueTime {
-    font-size: 36px;
-  }
-  
-  .backToStartBtn {
-    padding: 14px 40px;
-    font-size: 18px;
+    font-size: 11px;
   }
 }

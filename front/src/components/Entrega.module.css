@@ -1,85 +1,191 @@
+.oContainer {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
 .canvas {
-display: block;
-width: 100%;
-height: 100%;
-margin: 0;
-padding: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
+/* Bocadillo de diálogo - "¡Gracias!" - AL LADO DEL PERSONAJE */
 .dialogContainer {
-position: absolute;
-top: 20%;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 20px;
-animation: fadeIn 0.5s ease-in-out;
-}
-
-.dialogBubble {
-background-color: #2b2a39;
-padding: 25px 30px;
-border-radius: 25px;
-box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-max-width: 350px;
-font-family: Arial, sans-serif;
-border: 3px solid #000000;
-}
-
-.dialogText {
-margin: 0;
-font-size: 20px;
-color: #ffffff;
-line-height: 1.4;
-text-align: center;
-font-weight: 500;
-}
-
-/* Contenedor de botones */
-.btns {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 10px;
-}
-
-/* Estilo del botón */
-.bake {
-background-color: #E8DCC8;
-color: #5C5C5C;
-border: none;
-border-radius: 12px;
-padding: 12px 40px;
-font-size: 18px;
-font-weight: 600;
-cursor: pointer;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-transition: all 0.2s ease;
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Efecto hover */
-.bake:hover {
-background-color: #DED0B6;
-transform: translateY(-2px);
-box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Efecto al presionar */
-.bake:active {
-transform: translateY(0);
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  top: 15%;
+  left: 180px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateX(-50%) translateY(-10px);
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-to {
-opacity: 1;
-transform: translateX(-50%) translateY(0);
+
+.dialogBubble {
+  background-color: #f4a261;
+  padding: 15px 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  max-width: 280px;
+  font-family: Arial, sans-serif;
+  border: 3px solid #1a2f2f;
+  position: relative;
 }
+
+/* Flecha del bocadillo apuntando hacia abajo */
+.dialogBubble::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #f4a261;
+}
+
+.dialogBubble::before {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-left: 17px solid transparent;
+  border-right: 17px solid transparent;
+  border-top: 17px solid #1a2f2f;
+  z-index: -1;
+}
+
+.dialogText {
+  margin: 0;
+  font-size: 16px;
+  color: #1a2f2f;
+  line-height: 1.4;
+  text-align: left;
+  font-weight: 500;
+  font-family: Arial, sans-serif;
+}
+
+/* ✨ BOTÓN SIGUIENTE CLIENTE - CON ESTILO NARANJA */
+.nextButtonContainer {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nextButton {
+  background-color: #db6e15;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 60px;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(194, 145, 106, 0.4);
+  transition: all 0.3s ease;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Efecto hover */
+.nextButton:hover {
+  background-color: #f17f21;
+  transform: scale(1.08);
+  box-shadow: 0 0 25px rgba(196, 116, 50, 0.6);
+}
+
+/* Efecto al presionar */
+.nextButton:active {
+  transform: scale(0.96);
+  background-color: #e96e09;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dialogContainer {
+    left: 15%;
+    top: 20%;
+  }
+
+  .dialogBubble {
+    padding: 20px 30px;
+  }
+
+  .dialogText {
+    font-size: 24px;
+  }
+
+  .nextButtonContainer {
+    bottom: 20px;
+  }
+
+  .nextButton {
+    padding: 12px 50px;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialogContainer {
+    left: 10%;
+    top: 15%;
+  }
+
+  .dialogBubble {
+    padding: 15px 25px;
+  }
+
+  .dialogText {
+    font-size: 20px;
+  }
+
+  .nextButton {
+    padding: 10px 40px;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
 }

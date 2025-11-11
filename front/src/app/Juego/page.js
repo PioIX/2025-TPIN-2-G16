@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from "./page.module.css";
 import Pedido from "@/components/Pedido";
 import Cocina from "@/components/Cocina";
 import Entrega from "@/components/Entrega";
 
 export default function JuegoContent() {
-  const [showPedido, setShowPedido] = useState(true); // ✅ Cambié a true
+  const router = useRouter();
+  const [showPedido, setShowPedido] = useState(true);
   const [showCocina, setShowCocina] = useState(false);
   const [showEntrega, setShowEntrega] = useState(false);
 
@@ -128,7 +130,7 @@ export default function JuegoContent() {
     }
   };
 
-    if (clientes.length === 0) {
+  if (clientes.length === 0) {
     return (
       <div className={styles.container1}>
         <div style={{
@@ -136,7 +138,7 @@ export default function JuegoContent() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #ffd4a3 0%, #ffb366 100%)',
           color: 'white',
           fontSize: '32px'
         }}>
@@ -155,7 +157,7 @@ export default function JuegoContent() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #ffd4a3 0%, #ffb366 100%)',
         padding: '40px'
       }}>
         <h1 style={{
@@ -180,14 +182,14 @@ export default function JuegoContent() {
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '20px',
-              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+              background: 'linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%)',
               borderRadius: '12px',
               minWidth: '400px'
             }}>
-              <span style={{fontSize: '20px', fontWeight: '600', color: '#333'}}>
+              <span style={{fontSize: '20px', fontWeight: '600', color: '#8b4513'}}>
                 Clientes atendidos:
               </span>
-              <span style={{fontSize: '36px', fontWeight: 'bold', color: '#667eea'}}>
+              <span style={{fontSize: '36px', fontWeight: 'bold', color: '#d2691e'}}>
                 {clientes.length}
               </span>
             </div>
@@ -197,16 +199,16 @@ export default function JuegoContent() {
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '20px',
-              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+              background: 'linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%)',
               borderRadius: '12px'
             }}>
-              <span style={{fontSize: '20px', fontWeight: '600', color: '#333'}}>
+              <span style={{fontSize: '20px', fontWeight: '600', color: '#8b4513'}}>
                 Tiempo total:
               </span>
               <span style={{
                 fontSize: '48px',
                 fontWeight: 'bold',
-                color: '#764ba2',
+                color: '#ff8c42',
                 fontFamily: 'Courier New, monospace',
                 letterSpacing: '3px'
               }}>
@@ -218,7 +220,7 @@ export default function JuegoContent() {
 
         <button 
           style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            background: 'linear-gradient(135deg, #ffa726 0%, #ff6f00 100%)',
             color: 'white',
             border: 'none',
             padding: '18px 50px',
@@ -226,18 +228,9 @@ export default function JuegoContent() {
             fontWeight: 'bold',
             borderRadius: '50px',
             cursor: 'pointer',
-            boxShadow: '0 10px 30px rgba(245,87,108,0.4)'
+            boxShadow: '0 10px 30px rgba(255,143,0,0.4)'
           }}
-          onClick={() => {
-            resetTimer();
-            setCurrentClienteIndex(0);
-            setJuegoFinished(false);
-            setShowPedido(true);
-            setShowCocina(false);
-            setShowEntrega(false);
-            const shuffled = shuffleArray(allClientes);
-            setClientes(shuffled);
-          }}
+          onClick={() => router.push('/inicio')}
         >
           🏠 Volver al Inicio
         </button>
@@ -252,7 +245,7 @@ export default function JuegoContent() {
           position: 'fixed',
           top: '20px',
           right: '20px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #ffa726 0%, #ff8c42 100%)',
           color: 'white',
           padding: '12px 24px',
           borderRadius: '50px',
@@ -260,7 +253,7 @@ export default function JuegoContent() {
           alignItems: 'center',
           gap: '12px',
           fontWeight: 'bold',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          boxShadow: '0 4px 15px rgba(255,143,0,0.3)',
           zIndex: 1000
         }}>
           <span style={{fontSize: '24px'}}>⏱️</span>
