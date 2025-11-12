@@ -230,7 +230,7 @@ export default function JuegoContent() {
             cursor: 'pointer',
             boxShadow: '0 10px 30px rgba(255,143,0,0.4)'
           }}
-          onClick={() => router.push('/inicio')}
+          onClick={() => router.push('/login')}
         >
           🏠 Volver al Inicio
         </button>
