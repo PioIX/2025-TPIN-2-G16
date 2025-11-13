@@ -59,8 +59,11 @@ export default function RegistroYLogin() {
         
         // Pequeño delay antes de redirigir
         setTimeout(() => {
-          console.log("🚀 LOGIN - Redirigiendo a /inicio")
-          router.push("/inicio")
+          if (result.administrador === 1 || result.administrador === true) {
+            router.push("/administrador")
+          } else {
+            router.push("/menu")
+          }
         }, 100)
         
       } else {
