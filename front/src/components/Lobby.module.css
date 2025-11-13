@@ -1,272 +1,159 @@
-/* lobby.module.css */
-
 .lobbyContainer {
   min-height: 100vh;
-  background: linear-gradient(180deg, #1a2332 0%, #2d3f54 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a2f2f  0%, #2b4e4e  100%);
+  padding: 20px;
+}
+
+.lobbyCard {
+  background: #f4a261;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.codigoContainer {
+  margin-bottom: 30px;
+}
+
+.codigoLabel {
+  text-align: center;
+  color: #000000;
+  margin-bottom: 10px;
+}
+
+.codigoBox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.codigo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 4px;
+}
+
+.jugadoresContainer {
+  margin-bottom: 30px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.jugadoresList {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
+  gap: 10px;
 }
 
-/* Efecto de estrellas en el fondo */
-.lobbyContainer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    radial-gradient(2px 2px at 20% 30%, white, transparent),
-    radial-gradient(2px 2px at 60% 70%, white, transparent),
-    radial-gradient(1px 1px at 50% 50%, white, transparent),
-    radial-gradient(1px 1px at 80% 10%, white, transparent),
-    radial-gradient(2px 2px at 90% 60%, white, transparent),
-    radial-gradient(1px 1px at 33% 80%, white, transparent);
-  background-size: 200% 200%;
-  opacity: 0.4;
-  animation: twinkle 4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-/* Caja del código de sala */
-.roomCodeBox {
-  background: linear-gradient(145deg, #f39c12 0%, #e67e22 100%);
-  border: 4px solid #2c3e50;
-  border-radius: 20px;
-  padding: 1.5rem 3rem;
-  margin-bottom: 3rem;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.5),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: relative;
-  z-index: 1;
-}
-
-.roomCodeBox span {
-  display: block;
-  font-size: 2.5rem;
-  margin-top: 0.5rem;
-  color: #1a1a1a;
-  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.3);
-  letter-spacing: 8px;
-}
-
-/* Contenedor de jugadores */
-.players {
-  display: flex;
-  gap: 3rem;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* Tarjeta de jugador */
-.playerCard {
-  background: linear-gradient(145deg, #d68910 0%, #e67e22 100%);
-  border: 5px solid #2c3e50;
-  border-radius: 20px;
-  padding: 2rem;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.6),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.3);
-  position: relative;
-  transition: transform 0.3s ease;
-}
-
-.playerCard:hover {
-  transform: translateY(-10px);
-}
-
-/* Avatar placeholder */
-.avatarPlaceholder {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-  border: 4px solid #f39c12;
+.jugadorItem {
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  font-weight: bold;
-  color: #f39c12;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  box-shadow: 
-    0 8px 20px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.1);
+  gap: 10px;
 }
 
-/* Nombre del jugador */
-.playerName {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #2c3e50;
-  text-align: center;
-  margin: 0;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-/* Tag de host */
-.hostTag {
-  background: linear-gradient(145deg, #f39c12 0%, #e67e22 100%);
-  color: #1a1a1a;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  border: 2px solid #2c3e50;
-  margin: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Tag "Tú" */
-.ready {
-  background: #27ae60;
-  color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  border: 2px solid #1e8449;
-  margin: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Slot vacío */
 .emptySlot {
-  background: rgba(44, 62, 80, 0.6);
-  border: 5px dashed #7f8c8d;
+  opacity: 0.5;
+  font-style: sans-serif;
+}
+
+.jugadorNombre {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+}
+
+.hostBadge {
+  background: #ffd700;
+  padding: 4px 12px;
   border-radius: 20px;
-  padding: 2rem;
-  width: 200px;
-  min-height: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  color: #ecf0f1;
+  font-size: 0.85rem;
+}
+
+.youBadge {
+  background: #667eea;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.actions {
   text-align: center;
 }
 
-.emptySlot p {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.codeHint {
-  font-size: 0.9rem !important;
-  color: #bdc3c7;
-}
-
-.codeHint strong {
-  color: #f39c12;
-  font-size: 1.2rem;
-}
-
-/* Mensaje de espera */
-.waitingMessage {
-  background: linear-gradient(145deg, #3498db 0%, #2980b9 100%);
+.startBtn {
+  padding: 15px 40px;
+  background: #667eea;
   color: white;
-  padding: 1rem 2rem;
-  border-radius: 15px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border: 3px solid #2c3e50;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  margin-top: 1rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* Advertencia de conexión */
-.connectionWarning {
-  background: linear-gradient(145deg, #e74c3c 0%, #c0392b 100%);
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 15px;
+  border: none;
+  border-radius: 10px;
   font-size: 1.1rem;
-  font-weight: bold;
-  border: 3px solid #2c3e50;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  animation: pulse 1.5s ease-in-out infinite;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
-  50% { 
-    opacity: 0.8;
-    transform: translateX(-50%) scale(1.05);
-  }
+.startBtn:hover:not(:disabled) {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .roomCodeBox {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-  }
+.startBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
 
-  .roomCodeBox span {
-    font-size: 2rem;
-    letter-spacing: 4px;
-  }
+.waitingText {
+  color: #000000;
+  font-style: sans-serif;
+}
 
-  .players {
-    gap: 2rem;
-  }
+.startBtn {
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
 
-  .playerCard {
-    width: 150px;
-    padding: 1.5rem;
-  }
+.startBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
 
-  .avatarPlaceholder {
-    width: 80px;
-    height: 80px;
-    font-size: 2.5rem;
-  }
+.startBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-  .playerName {
-    font-size: 1.1rem;
-  }
-
-  .emptySlot {
-    width: 150px;
-    min-height: 220px;
-  }
+.startBtn:active:not(:disabled) {
+  transform: translateY(0);
 }

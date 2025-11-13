@@ -1,247 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import useConnection from '../hooks/useConnection';
+'use client'
 
-function Lobby() {
-    const [userId, setUserId] = useState(null);
-    const [inputCode, setInputCode] = useState('');
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import styles from './Lobby.module.css'
+
+export default function Lobby({ codigo, socket, jugadores }) {
+  const router = useRouter()
+  const [miId, setMiId] = useState(null)
+  const [esHost, setEsHost] = useState(false)
+  const [copiado, setCopiado] = useState(false)
+
+  // Obtener el ID del jugador al cargar
+  useEffect(() => {
+    const jugadorId = sessionStorage.getItem("jugadorId")
+    console.log("🎮 LOBBY - Mi ID:", jugadorId)
+    if (jugadorId) {
+      setMiId(parseInt(jugadorId))
+    }
+  }, [])
+
+  // Verificar si soy el host
+  useEffect(() => {
+    console.log("🔍 LOBBY - Verificando host. Mi ID:", miId, "Jugadores:", jugadores)
     
-    // Hook de conexión - CAMBIAR LA IP POR LA DE TU SERVIDOR
-    const {
-        isConnected,
-        error,
-        roomCode,
-        jugadores,
-        gameStarted,
-        createRoom,
-        joinRoom,
-        startGame
-    } = useConnection("http://localhost:4000"); // Cambiar por http://TU_IP:4000
+    if (miId && jugadores.length > 0) {
+      const yo = jugadores.find(j => j.id_jugador === miId)
+      console.log("👤 LOBBY - Yo soy:", yo)
+      
+      if (yo) {
+        const soyHost = yo.esHost === 1
+        setEsHost(soyHost)
+        console.log(soyHost ? "👑 LOBBY - SOY EL HOST" : "👥 LOBBY - No soy el host")
+      }
+    }
+  }, [miId, jugadores])
 
-    // Obtener el ID del usuario del localStorage o de donde lo guardes
-    useEffect(() => {
-        const storedUserId = localStorage.getItem('userId');
-        if (storedUserId) {
-            setUserId(parseInt(storedUserId));
-        }
-        console.log(localStorage.getItem('userId'));
-    }, []);
+  // Listener para cuando el juego inicia
+  useEffect(() => {
+    if (!socket) return
 
-    // Si el juego inició, redirigir o mostrar algo
-    useEffect(() => {
-        if (gameStarted) {
-            console.log('¡El juego ha comenzado!');
-            // Aquí puedes redirigir a la pantalla del juego
-            // navigate('/game');
-        }
-    }, [gameStarted]);
+    const handleGameStart = (data) => {
+      console.log("🎮 LOBBY - ¡JUEGO INICIADO! Redirigiendo a /Juego con código:", data.code)
+      router.push(`/Juego?code=${data.code}`)
+    }
 
-    const handleCreateRoom = () => {
-        if (userId) {
-            createRoom(userId);
-        } else {
-            alert('Debes iniciar sesión primero');
-        }
-    };
+    socket.on("gameStart", handleGameStart)
 
-    const handleJoinRoom = () => {
-        if (!inputCode.trim()) {
-            alert('Ingresa un código de sala');
-            return;
-        }
-        if (userId) {
-            joinRoom(inputCode.toUpperCase(), userId);
-        } else {
-            alert('Debes iniciar sesión primero');
-        }
-    };
+    return () => {
+      socket.off("gameStart", handleGameStart)
+    }
+  }, [socket, router])
 
-    const handleStartGame = () => {
-        if (roomCode) {
-            startGame(roomCode);
-        }
-    };
+  // Función para iniciar el juego
+  const iniciarJuego = () => {
+    console.log("🚀 LOBBY - Intentando iniciar juego...")
+    console.log("🔍 LOBBY - ¿Soy host?:", esHost)
+    console.log("🔍 LOBBY - Jugadores:", jugadores.length)
+    
+    if (!esHost) {
+      alert("Solo el host puede iniciar el juego")
+      return
+    }
 
-    const isHost = jugadores.length > 0 && jugadores[0]?.id_jugador === userId;
+    if (jugadores.length < 2) {
+      alert("Se necesitan 2 jugadores para iniciar")
+      return
+    }
 
-    return (
-        <div className="lobby-container" style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <h1>Lobby del Juego</h1>
-            
-            {/* Estado de conexión */}
-            <div style={{ 
-                padding: '10px', 
-                backgroundColor: isConnected ? '#d4edda' : '#f8d7da',
-                borderRadius: '5px',
-                marginBottom: '20px'
-            }}>
-                {isConnected ? '✅ Conectado al servidor' : '❌ Desconectado del servidor'}
-            </div>
+    if (socket) {
+      console.log("📤 LOBBY - Emitiendo startGame con código:", codigo)
+      socket.emit("startGame", { code: codigo })
+    } else {
+      console.error("❌ LOBBY - No hay socket disponible")
+    }
+  }
 
-            {/* Errores */}
-            {error && (
-                <div style={{
-                    padding: '10px',
-                    backgroundColor: '#f8d7da',
-                    color: '#721c24',
-                    borderRadius: '5px',
-                    marginBottom: '20px'
-                }}>
-                    ⚠️ {error}
-                </div>
-            )}
+  // Función para copiar código
+  const copiarCodigo = async () => {
+    try {
+      await navigator.clipboard.writeText(codigo)
+      setCopiado(true)
+      setTimeout(() => setCopiado(false), 2000)
+    } catch (err) {
+      alert("Código copiado: " + codigo)
+    }
+  }
 
-            {/* Si no está en una sala */}
-            {!roomCode && (
-                <div>
-                    <div style={{ marginBottom: '20px' }}>
-                        <button 
-                            onClick={handleCreateRoom}
-                            disabled={!isConnected}
-                            style={{
-                                padding: '15px 30px',
-                                fontSize: '16px',
-                                backgroundColor: '#007bff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: isConnected ? 'pointer' : 'not-allowed',
-                                width: '100%',
-                                marginBottom: '10px'
-                            }}
-                        >
-                            🎮 Crear Nueva Sala
-                        </button>
-                    </div>
+  console.log("🖼️ LOBBY - Renderizando. Jugadores:", jugadores.length, "esHost:", esHost)
 
-                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                        <strong>— O —</strong>
-                    </div>
-
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Código de sala"
-                            value={inputCode}
-                            onChange={(e) => setInputCode(e.target.value)}
-                            style={{
-                                padding: '12px',
-                                fontSize: '16px',
-                                width: '100%',
-                                marginBottom: '10px',
-                                borderRadius: '5px',
-                                border: '1px solid #ccc',
-                                textTransform: 'uppercase'
-                            }}
-                            maxLength={6}
-                        />
-                        <button
-                            onClick={handleJoinRoom}
-                            disabled={!isConnected}
-                            style={{
-                                padding: '15px 30px',
-                                fontSize: '16px',
-                                backgroundColor: '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: isConnected ? 'pointer' : 'not-allowed',
-                                width: '100%'
-                            }}
-                        >
-                            🚪 Unirse a Sala
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Si está en una sala */}
-            {roomCode && (
-                <div>
-                    <div style={{
-                        padding: '20px',
-                        backgroundColor: '#e7f3ff',
-                        borderRadius: '5px',
-                        marginBottom: '20px',
-                        textAlign: 'center'
-                    }}>
-                        <h2>Código de Sala</h2>
-                        <div style={{
-                            fontSize: '32px',
-                            fontWeight: 'bold',
-                            letterSpacing: '5px',
-                            color: '#007bff'
-                        }}>
-                            {roomCode}
-                        </div>
-                        <small>Comparte este código con tu amigo</small>
-                    </div>
-
-                    <div style={{ marginBottom: '20px' }}>
-                        <h3>Jugadores ({jugadores.length}/2)</h3>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            {jugadores.map((jugador, index) => (
-                                <li key={jugador.id_jugador} style={{
-                                    padding: '10px',
-                                    backgroundColor: jugador.esHost ? '#fff3cd' : '#f8f9fa',
-                                    borderRadius: '5px',
-                                    marginBottom: '5px',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
-                                    <span>
-                                        {index + 1}. {jugador.nombre_usuario}
-                                    </span>
-                                    {jugador.esHost && (
-                                        <span style={{
-                                            backgroundColor: '#ffc107',
-                                            padding: '3px 8px',
-                                            borderRadius: '3px',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold'
-                                        }}>
-                                            HOST
-                                        </span>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Solo el host puede iniciar */}
-                    {isHost && jugadores.length === 2 && (
-                        <button
-                            onClick={handleStartGame}
-                            style={{
-                                padding: '15px 30px',
-                                fontSize: '18px',
-                                backgroundColor: '#dc3545',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                width: '100%',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            🎮 INICIAR JUEGO
-                        </button>
-                    )}
-
-                    {jugadores.length < 2 && (
-                        <div style={{
-                            padding: '15px',
-                            backgroundColor: '#fff3cd',
-                            borderRadius: '5px',
-                            textAlign: 'center'
-                        }}>
-                            ⏳ Esperando al segundo jugador...
-                        </div>
-                    )}
-                </div>
-            )}
+  return (
+    <div className={styles.lobbyContainer}>
+      <div className={styles.lobbyCard}>
+        <h1 className={styles.title}>Sala de Espera</h1>
+        
+        <div className={styles.codigoContainer}>
+          <p className={styles.codigoLabel}>Código de sala:</p>
+          <div className={styles.codigoBox}>
+            <span className={styles.codigo}>{codigo}</span>
+            <button 
+              onClick={copiarCodigo}
+              className={`${styles.copyBtn} ${copiado ? styles.copied : ''}`}
+            >
+              {copiado ? '✓ Copiado' : '📋 Copiar'}
+            </button>
+          </div>
+          <p className={styles.shareText}>Comparte este código con tu amigo</p>
         </div>
-    );
-}
 
-export default Lobby;
+        <div className={styles.jugadoresContainer}>
+          <h2 className={styles.subtitle}>Jugadores ({jugadores.length}/2)</h2>
+          <div className={styles.jugadoresList}>
+            {jugadores.map((jugador) => (
+              <div key={jugador.id_jugador} className={styles.jugadorItem}>
+                <span className={styles.jugadorNombre}>
+                  {jugador.nombre_usuario}
+                </span>
+                {jugador.esHost === 1 && (
+                  <span className={styles.hostBadge}>👑 Host</span>
+                )}
+                {jugador.id_jugador === miId && (
+                  <span className={styles.youBadge}>(Tú)</span>
+                )}
+              </div>
+            ))}
+            
+            {/* Mostrar slots vacíos */}
+            {jugadores.length < 2 && (
+              <div className={`${styles.jugadorItem} ${styles.emptySlot}`}>
+                <span className={styles.jugadorNombre}>Esperando jugador...</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.actions}>
+          {esHost ? (
+            <button 
+              onClick={iniciarJuego} 
+              className={styles.startBtn}
+              disabled={jugadores.length < 2}
+            >
+              {jugadores.length < 2 ? '⏳ Esperando jugadores...' : '🎮 Iniciar Juego'}
+            </button>
+          ) : (
+            <p className={styles.waitingText}>
+              ⏳ Esperando a que el host inicie el juego...
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

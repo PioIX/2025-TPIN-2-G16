@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 const session = require("express-session");
 const { realizarQuery } = require('./modulos/mysql');
+const sesionesActivas = new Map();
 
 var app = express();
 var port = process.env.PORT || 4000;
@@ -41,33 +42,31 @@ app.get('/', function (req, res) {
     });
 });
 
-// LOGIN - CORREGIDO CON LOGS
 app.post('/loginUsuario', async function (req, res) {
-    console.log("📥 Login - Datos recibidos:", req.body);
+    console.log("Login - Datos recibidos:", req.body);
     try {
         const result = await realizarQuery(`
             SELECT * FROM Jugadores WHERE nombre_usuario = "${req.body.nombre_usuario}" AND contraseña = "${req.body.contraseña}";
         `);
-        
-        console.log("🔍 Resultado de la query:", result);
-        
+
+        console.log("Resultado de la query:", result);
+
         if (result.length > 0) {
-            console.log("✅ Login exitoso - ID del jugador:", result[0].id_jugador);
-            res.send({ 
-                validar: true, 
+            console.log("Login exitoso - ID del jugador:", result[0].id_jugador);
+            res.send({
+                validar: true,
                 id: result[0].id_jugador
             })
         } else {
-            console.log("❌ Login fallido - Usuario o contraseña incorrectos");
+            console.log("Login fallido - Usuario o contraseña incorrectos");
             res.send({ validar: false })
         }
     } catch (error) {
-        console.log("❌ Error al buscar usuario:", error);
+        console.log("Error al buscar usuario:", error);
         res.status(500).send({ error: "No se pudo buscar el usuario" });
     }
 });
 
-// REGISTRO
 app.post('/registroUsuario', async function (req, res) {
     try {
         const existingJugador = await realizarQuery(`
@@ -91,7 +90,6 @@ app.post('/registroUsuario', async function (req, res) {
     }
 })
 
-// CLIENTES PEDIDO
 app.get('/clientesPedido', async function (req, res) {
     try {
         const result = await realizarQuery(
@@ -117,70 +115,117 @@ app.get('/clientesPedido', async function (req, res) {
     }
 });
 
-// SOCKET.IO
-io.on("connection", (socket) => {
+
+
+io.on("connection", async (socket) => {
     console.log('🔌 Usuario conectado:', socket.id);
 
+    // ==========================================
+    // AUTENTICACIÓN
+    // ==========================================
+    const jugadorId = socket.handshake.query.jugadorId;
+    console.log("🔍 Verificando jugador:", jugadorId);
+
+    if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
+        console.error("❌ Conexión rechazada: No hay jugadorId");
+        socket.emit("errorAuth", "Debes iniciar sesión primero");
+        socket.disconnect();
+        return;
+    }
+
+    try {
+        const jugadorExiste = await realizarQuery(`
+            SELECT * FROM Jugadores WHERE id_jugador = ${jugadorId}
+        `);
+
+        if (jugadorExiste.length === 0) {
+            console.error("❌ Jugador no encontrado en BD:", jugadorId);
+            socket.emit("errorAuth", "Usuario no válido");
+            socket.disconnect();
+            return;
+        }
+
+        sesionesActivas.set(socket.id, parseInt(jugadorId));
+        console.log("✅ Sesión autenticada:", socket.id, "-> Jugador ID:", jugadorId);
+
+        socket.emit("authenticated", {
+            jugadorId: parseInt(jugadorId),
+            nombre: jugadorExiste[0].nombre_usuario
+        });
+
+    } catch (err) {
+        console.error("❌ Error verificando jugador:", err);
+        socket.emit("errorAuth", "Error de autenticación");
+        socket.disconnect();
+        return;
+    }
+
+    // ==========================================
     // CREAR SALA
-    socket.on("createRoom", async (data) => {
+    // ==========================================
+    socket.on("createRoom", async () => {
         try {
-            console.log("📥 createRoom - Datos recibidos:", JSON.stringify(data, null, 2));
-            
-            const { id_jugador } = data;
+            const id_jugador = sesionesActivas.get(socket.id);
 
             if (!id_jugador) {
-                console.error("❌ createRoom - No se recibió id_jugador");
-                socket.emit("errorRoom", "ID de jugador no válido");
+                console.error("❌ createRoom - No hay sesión activa");
+                socket.emit("errorRoom", "Debes iniciar sesión primero");
                 return;
             }
 
-            console.log("🔍 createRoom - Buscando jugador con ID:", id_jugador);
-
-            const jugadorExiste = await realizarQuery(`
-                SELECT * FROM Jugadores WHERE id_jugador = ${id_jugador}
-            `);
-
-            if (jugadorExiste.length === 0) {
-                console.error("❌ createRoom - Jugador no encontrado en BD");
-                socket.emit("errorRoom", "Jugador no encontrado");
-                return;
-            }
+            console.log("🏗️ createRoom - Jugador ID:", id_jugador);
 
             const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
             console.log("🎲 createRoom - Código generado:", codigo);
 
+            // ✅ Insertar sala (solo codigo)
             const queryRoom = `INSERT INTO Juegos (codigo) VALUES ('${codigo}')`;
             const result = await realizarQuery(queryRoom);
             const id_juegos = result.insertId;
 
+            console.log("✅ createRoom - id_juegos insertado:", id_juegos);
+
+            // ✅ Insertar jugador en la sala (EL PRIMERO ES EL HOST)
             const queryJugador = `
-                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_result)
+                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_resultado)
                 VALUES (${id_jugador}, ${id_juegos}, NULL)
             `;
             await realizarQuery(queryJugador);
 
-            socket.join(codigo);
+            console.log("✅ createRoom - Jugador insertado como HOST");
 
+            // Unir socket a la sala
+            socket.join(codigo);
+            console.log("✅ createRoom - Socket unido a sala:", codigo);
+
+            // ✅ Obtener jugadores - EL HOST ES EL PRIMER JUGADOR
             const jugadores = await realizarQuery(`
-                SELECT
+                SELECT 
                     j.id_jugador,
                     j.nombre_usuario,
                     CASE 
-                        WHEN jj.id_jugador = (
-                            SELECT id_jugador 
+                        WHEN jj.id_jugadorjuego = (
+                            SELECT MIN(id_jugadorjuego) 
                             FROM JugadoresJuego 
-                            WHERE id_juegos = ${id_juegos} 
-                            ORDER BY id_jugadorjuego ASC 
-                            LIMIT 1
-                        ) THEN 1 ELSE 0 END AS esHost
+                            WHERE id_juegos = ${id_juegos}
+                        ) THEN 1 ELSE 0 
+                    END AS esHost
                 FROM JugadoresJuego jj
                 JOIN Jugadores j ON jj.id_jugador = j.id_jugador
                 WHERE jj.id_juegos = ${id_juegos}
                 ORDER BY jj.id_jugadorjuego ASC
             `);
 
+            console.log("🔍 DEBUG - Jugadores que se van a emitir:");
+            console.log("- Cantidad:", jugadores.length);
+            console.log("- Contenido:", JSON.stringify(jugadores, null, 2));
+            console.log("- Código de sala:", codigo);
+
+            // Emitir eventos
+            socket.emit("roomCreated", { code: codigo, id_juegos });
             io.to(codigo).emit("updateJugadores", jugadores);
-            socket.emit("roomCreated", { codigo, id_juegos });
+
+            console.log("✅ createRoom - Eventos emitidos correctamente");
 
         } catch (err) {
             console.error("❌ createRoom - Error:", err);
@@ -188,19 +233,31 @@ io.on("connection", (socket) => {
         }
     });
 
+    // ==========================================
     // UNIRSE A SALA
+    // ==========================================
     socket.on("joinRoom", async (data) => {
         try {
-            const { codigo, id_jugador } = data;
+            const { code } = data;
+            const id_jugador = sesionesActivas.get(socket.id);
 
-            if (!codigo || !id_jugador) {
-                console.error("❌ joinRoom - Datos incompletos");
-                socket.emit("errorRoom", "Datos incompletos");
+            if (!id_jugador) {
+                console.error("❌ joinRoom - No hay sesión activa");
+                socket.emit("errorRoom", "Debes iniciar sesión primero");
                 return;
             }
 
+            if (!code) {
+                console.error("❌ joinRoom - No se recibió código");
+                socket.emit("errorRoom", "Código de sala requerido");
+                return;
+            }
+
+            console.log("🚪 joinRoom - Jugador:", id_jugador, "Código:", code);
+
+            // Verificar que la sala existe
             const sala = await realizarQuery(`
-                SELECT id_juegos FROM Juegos WHERE codigo = '${codigo}'
+                SELECT id_juegos FROM Juegos WHERE codigo = '${code}'
             `);
 
             if (sala.length === 0) {
@@ -211,6 +268,7 @@ io.on("connection", (socket) => {
 
             const id_juegos = sala[0].id_juegos;
 
+            // Verificar que no esté llena
             const jugadoresActuales = await realizarQuery(`
                 SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juegos = ${id_juegos}
             `);
@@ -221,8 +279,10 @@ io.on("connection", (socket) => {
                 return;
             }
 
+            // Verificar que no esté ya en la sala
             const yaEnSala = await realizarQuery(`
-                SELECT * FROM JugadoresJuego WHERE id_juegos = ${id_juegos} AND id_jugador = ${id_jugador}
+                SELECT * FROM JugadoresJuego 
+                WHERE id_juegos = ${id_juegos} AND id_jugador = ${id_jugador}
             `);
 
             if (yaEnSala.length > 0) {
@@ -231,34 +291,42 @@ io.on("connection", (socket) => {
                 return;
             }
 
+            // Insertar jugador
             const queryJugador = `
-                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_result)
+                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_resultado)
                 VALUES (${id_jugador}, ${id_juegos}, NULL)
             `;
             await realizarQuery(queryJugador);
 
-            socket.join(codigo);
+            // Unir socket a la sala
+            socket.join(code);
+            console.log("✅ joinRoom - Socket unido a sala:", code);
 
+            // ✅ Obtener jugadores actualizados
             const jugadores = await realizarQuery(`
-                SELECT
+                SELECT 
                     j.id_jugador,
                     j.nombre_usuario,
                     CASE 
-                        WHEN jj.id_jugador = (
-                            SELECT id_jugador 
+                        WHEN jj.id_jugadorjuego = (
+                            SELECT MIN(id_jugadorjuego) 
                             FROM JugadoresJuego 
-                            WHERE id_juegos = ${id_juegos} 
-                            ORDER BY id_jugadorjuego ASC 
-                            LIMIT 1
-                        ) THEN 1 ELSE 0 END AS esHost
+                            WHERE id_juegos = ${id_juegos}
+                        ) THEN 1 ELSE 0 
+                    END AS esHost
                 FROM JugadoresJuego jj
                 JOIN Jugadores j ON jj.id_jugador = j.id_jugador
                 WHERE jj.id_juegos = ${id_juegos}
                 ORDER BY jj.id_jugadorjuego ASC
             `);
 
-            io.to(codigo).emit("updateJugadores", jugadores);
-            socket.emit("roomJoined", { codigo, id_juegos });
+            console.log("👥 joinRoom - Jugadores en sala:", jugadores);
+
+            // Emitir eventos
+            socket.emit("roomJoined", { code: code, id_juegos });
+            io.to(code).emit("updateJugadores", jugadores);
+
+            console.log("✅ joinRoom - Eventos emitidos correctamente");
 
         } catch (err) {
             console.error("❌ joinRoom - Error:", err);
@@ -266,8 +334,84 @@ io.on("connection", (socket) => {
         }
     });
 
+    // ==========================================
+    // INICIAR JUEGO
+    // ==========================================
+    socket.on("startGame", async (data) => {
+        try {
+            const { code } = data;
+            const id_jugador = sesionesActivas.get(socket.id);
+
+            console.log("🎮 startGame - Código:", code, "Jugador:", id_jugador);
+
+            if (!code) {
+                console.error("❌ startGame - No se recibió código");
+                socket.emit("errorRoom", "Código de sala requerido");
+                return;
+            }
+
+            // Verificar que la sala existe
+            const sala = await realizarQuery(`
+                SELECT id_juegos FROM Juegos WHERE codigo = '${code}'
+            `);
+
+            if (sala.length === 0) {
+                console.error("❌ startGame - Sala no encontrada");
+                socket.emit("errorRoom", "La sala no existe");
+                return;
+            }
+
+            const id_juegos = sala[0].id_juegos;
+
+            // Verificar que hay 2 jugadores
+            const jugadoresEnSala = await realizarQuery(`
+                SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juegos = ${id_juegos}
+            `);
+
+            if (jugadoresEnSala[0].total < 2) {
+                console.error("❌ startGame - Faltan jugadores");
+                socket.emit("errorRoom", "Se necesitan 2 jugadores para iniciar");
+                return;
+            }
+
+            // ✅ Verificar que quien inicia es el HOST (el primero que se unió)
+            const hostQuery = await realizarQuery(`
+                SELECT id_jugador 
+                FROM JugadoresJuego 
+                WHERE id_juegos = ${id_juegos} 
+                ORDER BY id_jugadorjuego ASC 
+                LIMIT 1
+            `);
+
+            if (hostQuery.length === 0 || hostQuery[0].id_jugador !== id_jugador) {
+                console.error("❌ startGame - Solo el host puede iniciar");
+                console.log("Host esperado:", hostQuery[0]?.id_jugador, "Recibido:", id_jugador);
+                socket.emit("errorRoom", "Solo el host puede iniciar el juego");
+                return;
+            }
+
+            console.log("✅ startGame - Host verificado, iniciando juego");
+
+            // Emitir a TODOS los jugadores
+            io.to(code).emit("gameStart", {
+                code: code,
+                id_juegos: id_juegos
+            });
+
+            console.log("✅ startGame - Juego iniciado en sala:", code);
+
+        } catch (err) {
+            console.error("❌ startGame - Error:", err);
+            socket.emit("errorRoom", "No se pudo iniciar el juego");
+        }
+    });
+
+    // ==========================================
     // DESCONEXIÓN
+    // ==========================================
     socket.on("disconnect", () => {
-        console.log("🔌 Usuario desconectado:", socket.id);
+        const jugadorId = sesionesActivas.get(socket.id);
+        console.log("🔌 Usuario desconectado:", socket.id, "Jugador:", jugadorId);
+        sesionesActivas.delete(socket.id);
     });
 });

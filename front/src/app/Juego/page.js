@@ -35,7 +35,7 @@ export default function JuegoContent() {
     { id: 8, nombre: 'Personaje 8' }
   ];
 
-  
+
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -62,10 +62,10 @@ export default function JuegoContent() {
   // ⏱️ Funciones del Timer
   const startTimer = () => {
     if (timerIntervalRef.current) return;
-    
+
     setTimerStarted(true);
     setElapsedTime(0);
-    
+
     timerIntervalRef.current = setInterval(() => {
       setElapsedTime(prev => prev + 1);
     }, 1000);
@@ -112,7 +112,7 @@ export default function JuegoContent() {
     setShowEntrega(true);
   };
 
-  
+
   const handleNextCliente = () => {
     const nextIndex = currentClienteIndex + 1;
 
@@ -148,7 +148,6 @@ export default function JuegoContent() {
     );
   }
 
-  // 🏆 Pantalla de Resultados
   if (juegoFinished) {
     return (
       <div style={{
@@ -168,7 +167,7 @@ export default function JuegoContent() {
         }}>
           🎉 ¡Juego Completado! 🎉
         </h1>
-        
+
         <div style={{
           background: 'white',
           borderRadius: '20px',
@@ -176,7 +175,7 @@ export default function JuegoContent() {
           boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
           marginBottom: '40px'
         }}>
-          <div style={{display: 'flex', flexDirection: 'column', gap: '30px'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -186,14 +185,14 @@ export default function JuegoContent() {
               borderRadius: '12px',
               minWidth: '400px'
             }}>
-              <span style={{fontSize: '20px', fontWeight: '600', color: '#8b4513'}}>
+              <span style={{ fontSize: '20px', fontWeight: '600', color: '#8b4513' }}>
                 Clientes atendidos:
               </span>
-              <span style={{fontSize: '36px', fontWeight: 'bold', color: '#d2691e'}}>
+              <span style={{ fontSize: '36px', fontWeight: 'bold', color: '#d2691e' }}>
                 {clientes.length}
               </span>
             </div>
-            
+
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -202,7 +201,7 @@ export default function JuegoContent() {
               background: 'linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%)',
               borderRadius: '12px'
             }}>
-              <span style={{fontSize: '20px', fontWeight: '600', color: '#8b4513'}}>
+              <span style={{ fontSize: '20px', fontWeight: '600', color: '#8b4513' }}>
                 Tiempo total:
               </span>
               <span style={{
@@ -218,7 +217,7 @@ export default function JuegoContent() {
           </div>
         </div>
 
-        <button 
+        <button
           style={{
             background: 'linear-gradient(135deg, #ffa726 0%, #ff6f00 100%)',
             color: 'white',
@@ -256,11 +255,11 @@ export default function JuegoContent() {
           boxShadow: '0 4px 15px rgba(255,143,0,0.3)',
           zIndex: 1000
         }}>
-          <span style={{fontSize: '24px'}}>⏱️</span>
-          <span style={{fontSize: '28px', letterSpacing: '2px', fontFamily: 'Courier New, monospace'}}>
+          <span style={{ fontSize: '24px' }}>⏱️</span>
+          <span style={{ fontSize: '28px', letterSpacing: '2px', fontFamily: 'Courier New, monospace' }}>
             {formatTime()}
           </span>
-          <span style={{fontSize: '14px', opacity: 0.9, paddingLeft: '12px', borderLeft: '2px solid rgba(255,255,255,0.5)'}}>
+          <span style={{ fontSize: '14px', opacity: 0.9, paddingLeft: '12px', borderLeft: '2px solid rgba(255,255,255,0.5)' }}>
             Cliente {currentClienteIndex + 1}/{clientes.length}
           </span>
         </div>
@@ -269,22 +268,22 @@ export default function JuegoContent() {
       <div className={styles.container1}>
         {showPedido && (
           <div className={styles.section}>
-            <Pedido 
-              key={`pedido-${currentClienteIndex}`} 
-              onGoToCocina={handleGoToCocina} 
+            <Pedido
+              key={`pedido-${currentClienteIndex}`}
+              onGoToCocina={handleGoToCocina}
             />
           </div>
         )}
-        
+
         {showCocina && (
           <div className={styles.section}>
             <Cocina onGoToEntrega={handleGoToEntrega} />
           </div>
         )}
-        
+
         {showEntrega && (
           <div className={styles.section}>
-            <Entrega 
+            <Entrega
               onNextCliente={handleNextCliente}
               currentCliente={currentClienteIndex + 1}
               totalClientes={clientes.length}
