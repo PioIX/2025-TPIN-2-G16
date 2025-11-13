@@ -1,119 +1,246 @@
-"use client";
+import React, { useState, useEffect } from 'react';
+import useConnection from '../hooks/useConnection';
 
-import { useEffect } from "react";
-import Button from "./Button";
-import styles from "./lobby.module.css";
+function Lobby() {
+    const [userId, setUserId] = useState(null);
+    const [inputCode, setInputCode] = useState('');
+    
+    // Hook de conexión - CAMBIAR LA IP POR LA DE TU SERVIDOR
+    const {
+        isConnected,
+        error,
+        roomCode,
+        jugadores,
+        gameStarted,
+        createRoom,
+        joinRoom,
+        startGame
+    } = useConnection("http://localhost:4000"); // Cambiar por http://TU_IP:4000
 
-export default function Lobby({ codigo, jugadores = [], socket }) {
-  // Obtener userId directamente del sessionStorage
-  const userId = typeof window !== 'undefined' 
-    ? parseInt(sessionStorage.getItem("jugadorId")) 
-    : null;
+    // Obtener el ID del usuario del localStorage o de donde lo guardes
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            setUserId(parseInt(storedUserId));
+        }
+    }, []);
 
-  useEffect(() => {
-    console.log("=== DEBUG LOBBY ===");
-    console.log("Jugadores en Lobby:", JSON.stringify(jugadores, null, 2));
-    console.log("Mi userId:", userId);
-    console.log("Tipo de userId:", typeof userId);
-    console.log("==================");
-  }, [jugadores, userId]);
+    // Si el juego inició, redirigir o mostrar algo
+    useEffect(() => {
+        if (gameStarted) {
+            console.log('¡El juego ha comenzado!');
+            // Aquí puedes redirigir a la pantalla del juego
+            // navigate('/game');
+        }
+    }, [gameStarted]);
 
-  // Verificar si soy el host
-  const soyHost = jugadores.length > 0 && jugadores.some(
-    (jug) => Number(jug.id_jugador) === Number(userId) && Number(jug.esHost) === 1
-  );
+    const handleCreateRoom = () => {
+        if (userId) {
+            createRoom(userId);
+        } else {
+            alert('Debes iniciar sesión primero');
+        }
+    };
 
-  // Verificar conexión del socket
-  const isConnected = socket?.connected || false;
+    const handleJoinRoom = () => {
+        if (!inputCode.trim()) {
+            alert('Ingresa un código de sala');
+            return;
+        }
+        if (userId) {
+            joinRoom(inputCode.toUpperCase(), userId);
+        } else {
+            alert('Debes iniciar sesión primero');
+        }
+    };
 
-  function onStartGame() {
-    if (!socket || !isConnected) {
-      console.error("❌ Socket no conectado");
-      alert("Error: No hay conexión con el servidor");
-      return;
-    }
+    const handleStartGame = () => {
+        if (roomCode) {
+            startGame(roomCode);
+        }
+    };
 
-    if (jugadores.length < 2) {
-      alert("Se necesitan 2 jugadores para iniciar");
-      return;
-    }
+    const isHost = jugadores.length > 0 && jugadores[0]?.id_jugador === userId;
 
-    console.log("🎮 Iniciando juego...");
-    socket.emit("startGame", { code: codigo });
-  }
-
-  // Validación por si no hay jugadores
-  if (!jugadores || jugadores.length === 0) {
     return (
-      <div className={styles.lobbyContainer}>
-        <div className={styles.roomCodeBox}>
-          Código de sala: <span>{codigo}</span>
-        </div>
-        <div className={styles.players}>
-          <div className={styles.emptySlot}>Cargando jugadores...</div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.lobbyContainer}>
-      {/* Caja elegante con el código */}
-      <div className={styles.roomCodeBox}>
-        Código de sala: <span>{codigo}</span>
-      </div>
-
-      <div className={styles.players}>
-        {jugadores.map((jug) => (
-          <div key={jug.id_jugador} className={styles.playerCard}>
-            {/* Iniciales en lugar de avatar */}
-            <div className={styles.avatarPlaceholder}>
-              {jug.nombre_usuario ? jug.nombre_usuario.charAt(0).toUpperCase() : "?"}
+        <div className="lobby-container" style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+            <h1>Lobby del Juego</h1>
+            
+            {/* Estado de conexión */}
+            <div style={{ 
+                padding: '10px', 
+                backgroundColor: isConnected ? '#d4edda' : '#f8d7da',
+                borderRadius: '5px',
+                marginBottom: '20px'
+            }}>
+                {isConnected ? '✅ Conectado al servidor' : '❌ Desconectado del servidor'}
             </div>
 
-            <h3 className={styles.playerName}>{jug.nombre_usuario}</h3>
-
-            {/* Si es el host */}
-            {Boolean(jug.esHost) && (
-              <p className={styles.hostTag}>👑 Host</p>
+            {/* Errores */}
+            {error && (
+                <div style={{
+                    padding: '10px',
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24',
+                    borderRadius: '5px',
+                    marginBottom: '20px'
+                }}>
+                    ⚠️ {error}
+                </div>
             )}
 
-            {/* Indicador de que soy yo */}
-            {Number(jug.id_jugador) === Number(userId) && (
-              <p className={styles.ready}>Tú</p>
+            {/* Si no está en una sala */}
+            {!roomCode && (
+                <div>
+                    <div style={{ marginBottom: '20px' }}>
+                        <button 
+                            onClick={handleCreateRoom}
+                            disabled={!isConnected}
+                            style={{
+                                padding: '15px 30px',
+                                fontSize: '16px',
+                                backgroundColor: '#007bff',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: isConnected ? 'pointer' : 'not-allowed',
+                                width: '100%',
+                                marginBottom: '10px'
+                            }}
+                        >
+                            🎮 Crear Nueva Sala
+                        </button>
+                    </div>
+
+                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <strong>— O —</strong>
+                    </div>
+
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Código de sala"
+                            value={inputCode}
+                            onChange={(e) => setInputCode(e.target.value)}
+                            style={{
+                                padding: '12px',
+                                fontSize: '16px',
+                                width: '100%',
+                                marginBottom: '10px',
+                                borderRadius: '5px',
+                                border: '1px solid #ccc',
+                                textTransform: 'uppercase'
+                            }}
+                            maxLength={6}
+                        />
+                        <button
+                            onClick={handleJoinRoom}
+                            disabled={!isConnected}
+                            style={{
+                                padding: '15px 30px',
+                                fontSize: '16px',
+                                backgroundColor: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: isConnected ? 'pointer' : 'not-allowed',
+                                width: '100%'
+                            }}
+                        >
+                            🚪 Unirse a Sala
+                        </button>
+                    </div>
+                </div>
             )}
-          </div>
-        ))}
 
-        {/* Si hay menos de 2 jugadores, mostrar slot vacío */}
-        {jugadores.length < 2 && (
-          <div className={styles.emptySlot}>
-            <p>Esperando jugador...</p>
-            <p className={styles.codeHint}>
-              Comparte el código: <strong>{codigo}</strong>
-            </p>
-          </div>
-        )}
-      </div>
+            {/* Si está en una sala */}
+            {roomCode && (
+                <div>
+                    <div style={{
+                        padding: '20px',
+                        backgroundColor: '#e7f3ff',
+                        borderRadius: '5px',
+                        marginBottom: '20px',
+                        textAlign: 'center'
+                    }}>
+                        <h2>Código de Sala</h2>
+                        <div style={{
+                            fontSize: '32px',
+                            fontWeight: 'bold',
+                            letterSpacing: '5px',
+                            color: '#007bff'
+                        }}>
+                            {roomCode}
+                        </div>
+                        <small>Comparte este código con tu amigo</small>
+                    </div>
 
-      {/* Botón visible solo para el host cuando hay 2 jugadores */}
-      {soyHost && jugadores.length === 2 && (
-        <Button page="lobby" onClick={onStartGame} text="Iniciar Juego" />
-      )}
+                    <div style={{ marginBottom: '20px' }}>
+                        <h3>Jugadores ({jugadores.length}/2)</h3>
+                        <ul style={{ listStyle: 'none', padding: 0 }}>
+                            {jugadores.map((jugador, index) => (
+                                <li key={jugador.id_jugador} style={{
+                                    padding: '10px',
+                                    backgroundColor: jugador.esHost ? '#fff3cd' : '#f8f9fa',
+                                    borderRadius: '5px',
+                                    marginBottom: '5px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <span>
+                                        {index + 1}. {jugador.nombre_usuario}
+                                    </span>
+                                    {jugador.esHost && (
+                                        <span style={{
+                                            backgroundColor: '#ffc107',
+                                            padding: '3px 8px',
+                                            borderRadius: '3px',
+                                            fontSize: '12px',
+                                            fontWeight: 'bold'
+                                        }}>
+                                            HOST
+                                        </span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
-      {/* Mensaje para jugadores que no son host */}
-      {!soyHost && jugadores.length === 2 && (
-        <p className={styles.waitingMessage}>
-          Esperando que el host inicie el juego...
-        </p>
-      )}
+                    {/* Solo el host puede iniciar */}
+                    {isHost && jugadores.length === 2 && (
+                        <button
+                            onClick={handleStartGame}
+                            style={{
+                                padding: '15px 30px',
+                                fontSize: '18px',
+                                backgroundColor: '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                width: '100%',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            🎮 INICIAR JUEGO
+                        </button>
+                    )}
 
-      {/* Indicador de conexión */}
-      {!isConnected && (
-        <div className={styles.connectionWarning}>
-          ⚠️ Reconectando al servidor...
+                    {jugadores.length < 2 && (
+                        <div style={{
+                            padding: '15px',
+                            backgroundColor: '#fff3cd',
+                            borderRadius: '5px',
+                            textAlign: 'center'
+                        }}>
+                            ⏳ Esperando al segundo jugador...
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
+
+export default Lobby;

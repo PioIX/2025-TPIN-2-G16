@@ -10,102 +10,101 @@ import Lobby from '@/components/Lobby'
 
 export default function MenuPrincipal() {
   const router = useRouter()
+  const { socket } = useSocket()
+  
+  // Estados principales
   const [mostrarReglas, setMostrarReglas] = useState(false)
-  const { socket, isConnected } = useSocket()
   const [codigo, setCodigo] = useState("")
   const [inLobby, setInLobby] = useState(false)
   const [jugadores, setJugadores] = useState([])
-  const [userId, setUserId] = useState(null)
-
-  // Estados para los popups
+  
+  // Estados para popups
   const [isPopUpGameOpen, setIsPopUpGameOpen] = useState(false)
   const [isCreateRoomOpen, setCreateRoomOpen] = useState(false)
   const [isJoinRoomOpen, setJoinRoomOpen] = useState(false)
-
-  // Obtener el userId del sessionStorage
-  useEffect(() => {
-    const id = sessionStorage.getItem("jugadorId") // ← CORREGIDO
-    if (id) {
-      setUserId(parseInt(id))
-    }
-  }, [])
 
   // Configurar listeners de socket
   useEffect(() => {
     if (!socket) return
 
-    socket.on("updateJugadores", (jugadores) => { // ← YA ESTÁ BIEN
-      console.log("Actualización de jugadores recibida")
-      console.log("Jugadores actuales:", jugadores)
+    const handleUpdateJugadores = (jugadores) => {
+      console.log("Jugadores actualizados:", jugadores)
       setJugadores(jugadores)
-    })
+    }
 
-    socket.on("gameStart", (data) => {
-      console.log("Recibido gameStart con code:", data.code)
+    const handleGameStart = (data) => {
+      console.log("Juego iniciado:", data.code)
       router.push(`/Juego?code=${data.code}`)
-    })
+    }
 
-    socket.on("roomCreated", (data) => {
-      console.log("Sala creada con código:", data.code)
+    const handleRoomCreated = (data) => {
+      console.log("Sala creada:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setCreateRoomOpen(false)
-    })
+    }
 
-    socket.on("roomJoined", (data) => {
-      console.log("Unido a sala:", data.code)
+    const handleRoomJoined = (data) => {
+      console.log("Te uniste a la sala:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setJoinRoomOpen(false)
-    })
+    }
 
-    socket.on("errorRoom", (msg) => {
+    const handleErrorRoom = (msg) => {
       alert("Error: " + msg)
-    })
+    }
+
+    socket.on("updateJugadores", handleUpdateJugadores)
+    socket.on("gameStart", handleGameStart)
+    socket.on("roomCreated", handleRoomCreated)
+    socket.on("roomJoined", handleRoomJoined)
+    socket.on("errorRoom", handleErrorRoom)
 
     return () => {
-      socket.off("updateJugadores") // ← YA ESTÁ BIEN
-      socket.off("gameStart")
-      socket.off("roomCreated")
-      socket.off("roomJoined")
-      socket.off("errorRoom")
+      socket.off("updateJugadores", handleUpdateJugadores)
+      socket.off("gameStart", handleGameStart)
+      socket.off("roomCreated", handleRoomCreated)
+      socket.off("roomJoined", handleRoomJoined)
+      socket.off("errorRoom", handleErrorRoom)
     }
   }, [socket, router])
 
-  const handleJugar = () => {
-    setIsPopUpGameOpen(true)
-  }
-
-  const toggleReglas = () => {
-    setMostrarReglas(!mostrarReglas)
-  }
-
-  // Funciones para crear y unirse a salas
-  function createRoom() {
-    console.log("Crear sala")
-
-    const id_jugador = sessionStorage.getItem("jugadorId") // ← CORREGIDO
+  // Función para crear sala
+  const createRoom = () => {
+    const id_jugador = sessionStorage.getItem("jugadorId")
+    console.log("Creando sala con jugador ID:", id_jugador)
 
     if (!id_jugador) {
-      alert("No se encontró el ID del jugador")
+      alert("No se encontró el ID del jugador. Por favor recarga la página.")
+      return
+    }
+
+    if (!socket) {
+      alert("No hay conexión con el servidor")
       return
     }
 
     socket.emit("createRoom", { id_jugador: parseInt(id_jugador) })
   }
 
-  function joinRoom() {
-    console.log("Unirse a sala:", codigo)
-
-    const id_jugador = sessionStorage.getItem("jugadorId") // ← CORREGIDO
+  // Función para unirse a sala
+  const joinRoom = () => {
+    const id_jugador = sessionStorage.getItem("jugadorId")
+    console.log("Uniéndose a sala con jugador ID:", id_jugador)
 
     if (!id_jugador) {
-      alert("No se encontró el ID del jugador")
+      alert("No se encontró el ID del jugador. Por favor recarga la página.")
       return
     }
 
     if (!codigo || codigo.trim() === "") {
       alert("Por favor ingresa un código de sala")
+      return
+    }
+
+    if (!socket) {
+      alert("No hay conexión con el servidor")
       return
     }
 
@@ -115,22 +114,7 @@ export default function MenuPrincipal() {
     })
   }
 
-  // Funciones para manejar popups
-  function showCreateRoom() {
-    setIsPopUpGameOpen(false)
-    setCreateRoomOpen(true)
-  }
-
-  function showJoinRoom() {
-    setIsPopUpGameOpen(false)
-    setJoinRoomOpen(true)
-  }
-
-  const closePopupGame = () => setIsPopUpGameOpen(false)
-  const closeCreateRoom = () => setCreateRoomOpen(false)
-  const closeJoinRoom = () => setJoinRoomOpen(false)
-
-  // Si está en el lobby, mostrar el componente Lobby
+  // Si está en el lobby, mostrar componente Lobby
   if (inLobby) {
     return (
       <Lobby
@@ -141,6 +125,7 @@ export default function MenuPrincipal() {
     )
   }
 
+  // Renderizar menú principal
   return (
     <div className={styles.menuContainer}>
       <div className={styles.backgroundImage}>
@@ -155,17 +140,18 @@ export default function MenuPrincipal() {
 
       <div className={styles.contentWrapper}>
         <div className={styles.buttonsContainer}>
-          <button className={styles.juegoButton} onClick={handleJugar}>
+          <button className={styles.juegoButton} onClick={() => setIsPopUpGameOpen(true)}>
             JUGAR
           </button>
-          <button className={styles.juegoButton} onClick={toggleReglas}>
+          <button className={styles.juegoButton} onClick={() => setMostrarReglas(!mostrarReglas)}>
             REGLAS DEL JUEGO
           </button>
         </div>
       </div>
 
+      {/* Modal de reglas */}
       {mostrarReglas && (
-        <div className={styles.modalOverlay} onClick={toggleReglas}>
+        <div className={styles.modalOverlay} onClick={() => setMostrarReglas(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>¡Bienvenido!</h2>
             <p className={styles.modalText}>
@@ -175,17 +161,17 @@ export default function MenuPrincipal() {
               Al final de cada jornada, verás tu puntaje y tu posición.
               ¡Corre contra el reloj y demuestra que eres el Master Burger Chef del mundo! 👑
             </p>
-            <button className={styles.closeButton} onClick={toggleReglas}>
+            <button className={styles.closeButton} onClick={() => setMostrarReglas(false)}>
               Cerrar
             </button>
           </div>
         </div>
       )}
 
-      {/* Popup principal para elegir crear o unirse */}
+      {/* Popup: elegir crear o unirse */}
       <Popup
         open={isPopUpGameOpen}
-        onClose={closePopupGame}
+        onClose={() => setIsPopUpGameOpen(false)}
         modal
         nested
         closeOnDocumentClick={false}
@@ -195,25 +181,37 @@ export default function MenuPrincipal() {
             <h2>Jugar</h2>
           </div>
           <div className={styles.content}>
-            <button onClick={showCreateRoom} className={styles.joinBtn}>
+            <button 
+              onClick={() => {
+                setIsPopUpGameOpen(false)
+                setCreateRoomOpen(true)
+              }} 
+              className={styles.joinBtn}
+            >
               Crear una sala
             </button>
-            <button onClick={showJoinRoom} className={styles.joinBtn}>
+            <button 
+              onClick={() => {
+                setIsPopUpGameOpen(false)
+                setJoinRoomOpen(true)
+              }} 
+              className={styles.joinBtn}
+            >
               Unirse a una sala
             </button>
           </div>
           <div className={styles.actions}>
-            <button onClick={closePopupGame} className={styles.cancelBtn}>
+            <button onClick={() => setIsPopUpGameOpen(false)} className={styles.cancelBtn}>
               Cerrar
             </button>
           </div>
         </div>
       </Popup>
 
-      {/* Popup para crear sala */}
+      {/* Popup: crear sala */}
       <Popup
         open={isCreateRoomOpen}
-        onClose={closeCreateRoom}
+        onClose={() => setCreateRoomOpen(false)}
         modal
         nested
         closeOnDocumentClick={false}
@@ -229,17 +227,17 @@ export default function MenuPrincipal() {
             <button onClick={createRoom} className={styles.createBtn}>
               Crear
             </button>
-            <button onClick={closeCreateRoom} className={styles.cancelBtn}>
+            <button onClick={() => setCreateRoomOpen(false)} className={styles.cancelBtn}>
               Cancelar
             </button>
           </div>
         </div>
       </Popup>
 
-      {/* Popup para unirse a sala */}
+      {/* Popup: unirse a sala */}
       <Popup
         open={isJoinRoomOpen}
-        onClose={closeJoinRoom}
+        onClose={() => setJoinRoomOpen(false)}
         modal
         nested
         closeOnDocumentClick={false}
@@ -262,7 +260,7 @@ export default function MenuPrincipal() {
             <button onClick={joinRoom} className={styles.createBtn}>
               Unirse
             </button>
-            <button onClick={closeJoinRoom} className={styles.cancelBtn}>
+            <button onClick={() => setJoinRoomOpen(false)} className={styles.cancelBtn}>
               Cancelar
             </button>
           </div>
