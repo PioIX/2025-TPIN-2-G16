@@ -195,10 +195,9 @@ export default function MenuPrincipal() {
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>¡Bienvenido!</h2>
             <p className={styles.modalText}>
-              ¡Prepárate para el desafío más sabroso! 🍔🎮 Tu misión es preparar y entregar hamburguesas perfectas para ganar puntos. 
-              Los pedidos serán cada vez más rápidos y complicados, ¡así que tendrás que ser veloz y preciso! Cuanto más rápido entregues y más acertado seas,
-              ¡más subirás en el ranking! 📈🌍
-              Al final de cada jornada, verás tu puntaje y tu posición.
+              ¡Prepárate para el desafío más sabroso! 🍔🎮 Tu misión es preparar y entregar hamburguesas perfectas para ganar teniendo el menor tiempo. 
+              Los pedidos los tendras que hacer rapido, ¡así que tendrás que ser veloz y preciso! Cuanto más rápido entregues y más cerca de ganar,
+              Al final de cada jornada, verás tu puntaje y tu tiempo.
               ¡Corre contra el reloj y demuestra que eres el Master Burger Chef del mundo! 👑
             </p>
             <button className={styles.closeButton} onClick={() => setMostrarReglas(false)}>

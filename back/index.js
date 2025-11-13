@@ -128,7 +128,6 @@ io.on("connection", (socket) => {
             
             const { id_jugador } = data;
 
-            // Validar que llegó el ID
             if (!id_jugador) {
                 console.error("❌ createRoom - No se recibió id_jugador");
                 socket.emit("errorRoom", "ID de jugador no válido");
@@ -137,7 +136,6 @@ io.on("connection", (socket) => {
 
             console.log("🔍 createRoom - Buscando jugador con ID:", id_jugador);
 
-            // Verificar que el jugador existe
             const jugadorExiste = await realizarQuery(`
                 SELECT * FROM Jugadores WHERE id_jugador = ${id_jugador}
             `);
@@ -148,26 +146,21 @@ io.on("connection", (socket) => {
                 return;
             }
 
-            // Generar código único para la sala
-            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-            console.log("🎲 createRoom - Código generado:", code);
+            const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
+            console.log("🎲 createRoom - Código generado:", codigo);
 
-            // Crear la sala
-            const queryRoom = `INSERT INTO Juegos (code) VALUES ('${code}')`;
+            const queryRoom = `INSERT INTO Juegos (codigo) VALUES ('${codigo}')`;
             const result = await realizarQuery(queryRoom);
-            const id_juego = result.insertId;
+            const id_juegos = result.insertId;
 
-            // Insertar al host en la sala
             const queryJugador = `
-                INSERT INTO JugadoresJuego (id_jugador, id_juego, id_result)
-                VALUES (${id_jugador}, ${id_juego}, NULL)
+                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_result)
+                VALUES (${id_jugador}, ${id_juegos}, NULL)
             `;
             await realizarQuery(queryJugador);
 
-            // Unir al socket a la sala
-            socket.join(code);
+            socket.join(codigo);
 
-            // Obtener jugadores en la sala
             const jugadores = await realizarQuery(`
                 SELECT
                     j.id_jugador,
@@ -176,18 +169,18 @@ io.on("connection", (socket) => {
                         WHEN jj.id_jugador = (
                             SELECT id_jugador 
                             FROM JugadoresJuego 
-                            WHERE id_juego = ${id_juego} 
+                            WHERE id_juegos = ${id_juegos} 
                             ORDER BY id_jugadorjuego ASC 
                             LIMIT 1
                         ) THEN 1 ELSE 0 END AS esHost
                 FROM JugadoresJuego jj
                 JOIN Jugadores j ON jj.id_jugador = j.id_jugador
-                WHERE jj.id_juego = ${id_juego}
+                WHERE jj.id_juegos = ${id_juegos}
                 ORDER BY jj.id_jugadorjuego ASC
             `);
 
-            io.to(code).emit("updateJugadores", jugadores);
-            socket.emit("roomCreated", { code, id_game: id_juego });
+            io.to(codigo).emit("updateJugadores", jugadores);
+            socket.emit("roomCreated", { codigo, id_juegos });
 
         } catch (err) {
             console.error("❌ createRoom - Error:", err);
@@ -198,17 +191,16 @@ io.on("connection", (socket) => {
     // UNIRSE A SALA
     socket.on("joinRoom", async (data) => {
         try {
-            const { code, id_jugador } = data;
+            const { codigo, id_jugador } = data;
 
-            if (!code || !id_jugador) {
+            if (!codigo || !id_jugador) {
                 console.error("❌ joinRoom - Datos incompletos");
                 socket.emit("errorRoom", "Datos incompletos");
                 return;
             }
 
-            // Verificar si la sala existe
             const sala = await realizarQuery(`
-                SELECT id_juego FROM Juegos WHERE code = '${code}'
+                SELECT id_juegos FROM Juegos WHERE codigo = '${codigo}'
             `);
 
             if (sala.length === 0) {
@@ -217,11 +209,10 @@ io.on("connection", (socket) => {
                 return;
             }
 
-            const id_juego = sala[0].id_juego;
+            const id_juegos = sala[0].id_juegos;
 
-            // Verificar si la sala tiene espacio
             const jugadoresActuales = await realizarQuery(`
-                SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juego = ${id_juego}
+                SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juegos = ${id_juegos}
             `);
 
             if (jugadoresActuales[0].total >= 2) {
@@ -230,9 +221,8 @@ io.on("connection", (socket) => {
                 return;
             }
 
-            // Verificar si el jugador ya está en la sala
             const yaEnSala = await realizarQuery(`
-                SELECT * FROM JugadoresJuego WHERE id_juego = ${id_juego} AND id_jugador = ${id_jugador}
+                SELECT * FROM JugadoresJuego WHERE id_juegos = ${id_juegos} AND id_jugador = ${id_jugador}
             `);
 
             if (yaEnSala.length > 0) {
@@ -241,17 +231,14 @@ io.on("connection", (socket) => {
                 return;
             }
 
-            // Insertar el jugador en la sala
             const queryJugador = `
-                INSERT INTO JugadoresJuego (id_jugador, id_juego, id_result)
-                VALUES (${id_jugador}, ${id_juego}, NULL)
+                INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_result)
+                VALUES (${id_jugador}, ${id_juegos}, NULL)
             `;
             await realizarQuery(queryJugador);
 
-            // Unir al socket
-            socket.join(code);
+            socket.join(codigo);
 
-            // Obtener jugadores actualizados
             const jugadores = await realizarQuery(`
                 SELECT
                     j.id_jugador,
@@ -260,18 +247,18 @@ io.on("connection", (socket) => {
                         WHEN jj.id_jugador = (
                             SELECT id_jugador 
                             FROM JugadoresJuego 
-                            WHERE id_juego = ${id_juego} 
+                            WHERE id_juegos = ${id_juegos} 
                             ORDER BY id_jugadorjuego ASC 
                             LIMIT 1
                         ) THEN 1 ELSE 0 END AS esHost
                 FROM JugadoresJuego jj
                 JOIN Jugadores j ON jj.id_jugador = j.id_jugador
-                WHERE jj.id_juego = ${id_juego}
+                WHERE jj.id_juegos = ${id_juegos}
                 ORDER BY jj.id_jugadorjuego ASC
             `);
 
-            io.to(code).emit("updateJugadores", jugadores);
-            socket.emit("roomJoined", { code, id_game: id_juego });
+            io.to(codigo).emit("updateJugadores", jugadores);
+            socket.emit("roomJoined", { codigo, id_juegos });
 
         } catch (err) {
             console.error("❌ joinRoom - Error:", err);
