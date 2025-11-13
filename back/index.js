@@ -55,7 +55,8 @@ app.post('/loginUsuario', async function (req, res) {
             console.log("Login exitoso - ID del jugador:", result[0].id_jugador);
             res.send({
                 validar: true,
-                id: result[0].id_jugador
+                id: result[0].id_jugador,
+                administrador: result[0].administrador 
             })
         } else {
             console.log("Login fallido - Usuario o contraseña incorrectos");
@@ -115,7 +116,35 @@ app.get('/clientesPedido', async function (req, res) {
     }
 });
 
+app.get('/admin/jugadores', async function (req, res) {
+    try {
+        const result = await realizarQuery(`SELECT * FROM Jugadores;`);
+        res.send({ success: true, jugadores: result });
+    } catch (error) {
+        console.log("Error al obtener usuarios:", error);
+        res.status(500).send({ error: "No se pudieron obtener los usuarios" });
+    }
+});
 
+app.put('/admin/jugadores/:id', async function (req, res) {
+    const { id } = req.params;
+    const { nombre_usuario, email, contraseña, administrador } = req.body;
+    
+    try {
+        const result = await realizarQuery(`
+            UPDATE Jugadores 
+            SET nombre_usuario = "${nombre_usuario}", 
+                email = "${email}", 
+                contraseña = "${contraseña}", 
+                administrador = ${administrador}
+            WHERE id_jugador = ${id};
+        `);
+        res.send({ success: true, message: "Usuario actualizado correctamente" });
+    } catch (error) {
+        console.log("Error al actualizar usuario:", error);
+        res.status(500).send({ error: "No se pudo actualizar el usuario" });
+    }
+});
 
 io.on("connection", async (socket) => {
     console.log('🔌 Usuario conectado:', socket.id);
