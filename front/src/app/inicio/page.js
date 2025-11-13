@@ -11,13 +11,13 @@ import Lobby from '@/components/Lobby'
 export default function MenuPrincipal() {
   const router = useRouter()
   const { socket } = useSocket()
-  
+
   // Estados principales
   const [mostrarReglas, setMostrarReglas] = useState(false)
   const [codigo, setCodigo] = useState("")
   const [inLobby, setInLobby] = useState(false)
   const [jugadores, setJugadores] = useState([])
-  
+
   // Estados para popups
   const [isPopUpGameOpen, setIsPopUpGameOpen] = useState(false)
   const [isCreateRoomOpen, setCreateRoomOpen] = useState(false)
@@ -26,54 +26,53 @@ export default function MenuPrincipal() {
   // VERIFICAR ID DEL JUGADOR AL CARGAR
   useEffect(() => {
     const jugadorId = sessionStorage.getItem("jugadorId")
-    console.log("🎮 MENU - Verificando jugadorId:", jugadorId)
-    console.log("🎮 MENU - Tipo:", typeof jugadorId)
-    
+    console.log("MENU - Verificando jugadorId:", jugadorId)
+
     if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
-      console.error("❌ MENU - No hay jugadorId válido, redirigiendo a login")
+      console.error("MENU - No hay jugadorId válido, redirigiendo a login")
       alert("No hay sesión activa. Por favor inicia sesión.")
       router.push('/')
       return
     }
-    
-    console.log("✅ MENU - jugadorId válido:", jugadorId)
+
+    console.log("MENU - jugadorId válido:", jugadorId)
   }, [router])
 
   // Configurar listeners de socket
   useEffect(() => {
     if (!socket) {
-      console.log("⏳ MENU - Esperando conexión de socket...")
+      console.log("MENU - Esperando conexión de socket...")
       return
     }
 
-    console.log("✅ MENU - Socket conectado, configurando listeners")
+    console.log("MENU - Socket conectado, configurando listeners")
 
-    const handleUpdateJugadores = (jugadores) => {
-      console.log("👥 MENU - Jugadores actualizados:", jugadores)
-      setJugadores(jugadores)
+    const handleUpdateJugadores = (jugadoresActualizados) => {
+      console.log("MENU - Jugadores actualizados:", jugadoresActualizados)
+      setJugadores(jugadoresActualizados)
     }
 
     const handleGameStart = (data) => {
-      console.log("🎮 MENU - Juego iniciado:", data.code)
+      console.log("MENU - Juego iniciado:", data.code)
       router.push(`/Juego?code=${data.code}`)
     }
 
     const handleRoomCreated = (data) => {
-      console.log("🏠 MENU - Sala creada:", data.code)
+      console.log("MENU - Sala creada:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setCreateRoomOpen(false)
     }
 
     const handleRoomJoined = (data) => {
-      console.log("🚪 MENU - Te uniste a la sala:", data.code)
+      console.log("MENU - Te uniste a la sala:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setJoinRoomOpen(false)
     }
 
     const handleErrorRoom = (msg) => {
-      console.error("❌ MENU - Error de sala:", msg)
+      console.error("MENU - Error de sala:", msg)
       alert("Error: " + msg)
     }
 
@@ -94,64 +93,46 @@ export default function MenuPrincipal() {
 
   // Función para crear sala
   const createRoom = () => {
-    const id_jugador = sessionStorage.getItem("jugadorId")
-    console.log("🏗️ CREAR SALA - ID del jugador:", id_jugador)
-    console.log("🏗️ CREAR SALA - Tipo:", typeof id_jugador)
-
-    if (!id_jugador || id_jugador === "null" || id_jugador === "undefined") {
-      console.error("❌ CREAR SALA - ID no válido")
-      alert("No se encontró el ID del jugador. Por favor recarga la página.")
-      return
-    }
-
     if (!socket) {
-      console.error("❌ CREAR SALA - No hay socket")
+      console.error("CREAR SALA - No hay socket")
       alert("No hay conexión con el servidor")
       return
     }
 
-    const idParseado = parseInt(id_jugador)
-    console.log("📤 CREAR SALA - Enviando:", { id_jugador: idParseado })
-    
-    socket.emit("createRoom", { id_jugador: idParseado })
+    console.log("CREAR SALA - Solicitando creación")
+    socket.emit("createRoom", {})
   }
 
   // Función para unirse a sala
   const joinRoom = () => {
-    const id_jugador = sessionStorage.getItem("jugadorId")
-    console.log("🚪 UNIRSE SALA - ID del jugador:", id_jugador)
-    console.log("🚪 UNIRSE SALA - Código:", codigo)
-
-    if (!id_jugador || id_jugador === "null" || id_jugador === "undefined") {
-      console.error("❌ UNIRSE SALA - ID no válido")
-      alert("No se encontró el ID del jugador. Por favor recarga la página.")
-      return
-    }
-
     if (!codigo || codigo.trim() === "") {
-      console.error("❌ UNIRSE SALA - Código vacío")
+      console.error("UNIRSE SALA - Código vacío")
       alert("Por favor ingresa un código de sala")
       return
     }
 
     if (!socket) {
-      console.error("❌ UNIRSE SALA - No hay socket")
+      console.error("UNIRSE SALA - No hay socket")
       alert("No hay conexión con el servidor")
       return
     }
 
-    const idParseado = parseInt(id_jugador)
     const codigoLimpio = codigo.trim().toUpperCase()
-    
-    console.log("📤 UNIRSE SALA - Enviando:", {
-      code: codigoLimpio,
-      id_jugador: idParseado
-    })
-    
-    socket.emit("joinRoom", {
-      code: codigoLimpio,
-      id_jugador: idParseado
-    })
+
+    console.log("UNIRSE SALA - Código:", codigoLimpio)
+    socket.emit("joinRoom", { code: codigoLimpio })
+  }
+
+  // ✨ NUEVA FUNCIÓN: Salir del lobby
+  const salirDelLobby = () => {
+    console.log("MENU - Saliendo del lobby")
+    // Opcional: emitir evento al servidor para que el jugador salga
+    // if (socket) {
+    //   socket.emit("leaveRoom", { code: codigo })
+    // }
+    setInLobby(false)
+    setCodigo("")
+    setJugadores([])
   }
 
   // Si está en el lobby, mostrar componente Lobby
@@ -161,6 +142,7 @@ export default function MenuPrincipal() {
         codigo={codigo}
         socket={socket}
         jugadores={jugadores}
+        onSalir={salirDelLobby}
       />
     )
   }
@@ -195,10 +177,10 @@ export default function MenuPrincipal() {
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>¡Bienvenido!</h2>
             <p className={styles.modalText}>
-              ¡Prepárate para el desafío más sabroso! 🍔🎮 Tu misión es preparar y entregar hamburguesas perfectas para ganar teniendo el menor tiempo. 
-              Los pedidos los tendras que hacer rapido, ¡así que tendrás que ser veloz y preciso! Cuanto más rápido entregues y más cerca de ganar,
+              ¡Prepárate para el desafío más sabroso! Tu misión es preparar y entregar hamburguesas perfectas para ganar teniendo el menor tiempo.
+              Los pedidos los tendrás que hacer rápido, ¡así que tendrás que ser veloz y preciso! Cuanto más rápido entregues y más cerca de ganar,
               Al final de cada jornada, verás tu puntaje y tu tiempo.
-              ¡Corre contra el reloj y demuestra que eres el Master Burger Chef del mundo! 👑
+              ¡Corre contra el reloj y demuestra que eres el Master Burger Chef del mundo!
             </p>
             <button className={styles.closeButton} onClick={() => setMostrarReglas(false)}>
               Cerrar
@@ -220,20 +202,20 @@ export default function MenuPrincipal() {
             <h2>Jugar</h2>
           </div>
           <div className={styles.content}>
-            <button 
+            <button
               onClick={() => {
                 setIsPopUpGameOpen(false)
                 setCreateRoomOpen(true)
-              }} 
+              }}
               className={styles.joinBtn}
             >
               Crear una sala
             </button>
-            <button 
+            <button
               onClick={() => {
                 setIsPopUpGameOpen(false)
                 setJoinRoomOpen(true)
-              }} 
+              }}
               className={styles.joinBtn}
             >
               Unirse a una sala
