@@ -23,35 +23,57 @@ export default function MenuPrincipal() {
   const [isCreateRoomOpen, setCreateRoomOpen] = useState(false)
   const [isJoinRoomOpen, setJoinRoomOpen] = useState(false)
 
+  // VERIFICAR ID DEL JUGADOR AL CARGAR
+  useEffect(() => {
+    const jugadorId = sessionStorage.getItem("jugadorId")
+    console.log("🎮 MENU - Verificando jugadorId:", jugadorId)
+    console.log("🎮 MENU - Tipo:", typeof jugadorId)
+    
+    if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
+      console.error("❌ MENU - No hay jugadorId válido, redirigiendo a login")
+      alert("No hay sesión activa. Por favor inicia sesión.")
+      router.push('/')
+      return
+    }
+    
+    console.log("✅ MENU - jugadorId válido:", jugadorId)
+  }, [router])
+
   // Configurar listeners de socket
   useEffect(() => {
-    if (!socket) return
+    if (!socket) {
+      console.log("⏳ MENU - Esperando conexión de socket...")
+      return
+    }
+
+    console.log("✅ MENU - Socket conectado, configurando listeners")
 
     const handleUpdateJugadores = (jugadores) => {
-      console.log("Jugadores actualizados:", jugadores)
+      console.log("👥 MENU - Jugadores actualizados:", jugadores)
       setJugadores(jugadores)
     }
 
     const handleGameStart = (data) => {
-      console.log("Juego iniciado:", data.code)
+      console.log("🎮 MENU - Juego iniciado:", data.code)
       router.push(`/Juego?code=${data.code}`)
     }
 
     const handleRoomCreated = (data) => {
-      console.log("Sala creada:", data.code)
+      console.log("🏠 MENU - Sala creada:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setCreateRoomOpen(false)
     }
 
     const handleRoomJoined = (data) => {
-      console.log("Te uniste a la sala:", data.code)
+      console.log("🚪 MENU - Te uniste a la sala:", data.code)
       setCodigo(data.code)
       setInLobby(true)
       setJoinRoomOpen(false)
     }
 
     const handleErrorRoom = (msg) => {
+      console.error("❌ MENU - Error de sala:", msg)
       alert("Error: " + msg)
     }
 
@@ -73,44 +95,62 @@ export default function MenuPrincipal() {
   // Función para crear sala
   const createRoom = () => {
     const id_jugador = sessionStorage.getItem("jugadorId")
-    console.log("Creando sala con jugador ID:", id_jugador)
+    console.log("🏗️ CREAR SALA - ID del jugador:", id_jugador)
+    console.log("🏗️ CREAR SALA - Tipo:", typeof id_jugador)
 
-    if (!id_jugador) {
+    if (!id_jugador || id_jugador === "null" || id_jugador === "undefined") {
+      console.error("❌ CREAR SALA - ID no válido")
       alert("No se encontró el ID del jugador. Por favor recarga la página.")
       return
     }
 
     if (!socket) {
+      console.error("❌ CREAR SALA - No hay socket")
       alert("No hay conexión con el servidor")
       return
     }
 
-    socket.emit("createRoom", { id_jugador: parseInt(id_jugador) })
+    const idParseado = parseInt(id_jugador)
+    console.log("📤 CREAR SALA - Enviando:", { id_jugador: idParseado })
+    
+    socket.emit("createRoom", { id_jugador: idParseado })
   }
 
   // Función para unirse a sala
   const joinRoom = () => {
     const id_jugador = sessionStorage.getItem("jugadorId")
-    console.log("Uniéndose a sala con jugador ID:", id_jugador)
+    console.log("🚪 UNIRSE SALA - ID del jugador:", id_jugador)
+    console.log("🚪 UNIRSE SALA - Código:", codigo)
 
-    if (!id_jugador) {
+    if (!id_jugador || id_jugador === "null" || id_jugador === "undefined") {
+      console.error("❌ UNIRSE SALA - ID no válido")
       alert("No se encontró el ID del jugador. Por favor recarga la página.")
       return
     }
 
     if (!codigo || codigo.trim() === "") {
+      console.error("❌ UNIRSE SALA - Código vacío")
       alert("Por favor ingresa un código de sala")
       return
     }
 
     if (!socket) {
+      console.error("❌ UNIRSE SALA - No hay socket")
       alert("No hay conexión con el servidor")
       return
     }
 
+    const idParseado = parseInt(id_jugador)
+    const codigoLimpio = codigo.trim().toUpperCase()
+    
+    console.log("📤 UNIRSE SALA - Enviando:", {
+      code: codigoLimpio,
+      id_jugador: idParseado
+    })
+    
     socket.emit("joinRoom", {
-      code: codigo.trim().toUpperCase(),
-      id_jugador: parseInt(id_jugador)
+      code: codigoLimpio,
+      id_jugador: idParseado
     })
   }
 

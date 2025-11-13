@@ -23,6 +23,7 @@ function Lobby() {
         if (storedUserId) {
             setUserId(parseInt(storedUserId));
         }
+        console.log(localStorage.getItem('userId'));
     }, []);
 
     // Si el juego inició, redirigir o mostrar algo

@@ -6,7 +6,6 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import styles from "./page.module.css";
 
-
 export default function RegistroYLogin() {
   const [modo, setModo] = useState("login");
   const [nombre_usuario, setNombre_Usuario] = useState("");
@@ -28,28 +27,49 @@ export default function RegistroYLogin() {
       showModal("Error", "Debes completar todos los campos")
       return
     }
+    
     const datosLogin = {
       nombre_usuario: nombre_usuario,
       contraseña: contraseña,
     }
+    
     try {
-      console.log(datosLogin)
+      console.log("📤 LOGIN - Enviando datos:", datosLogin)
+      
       const response = await fetch("http://localhost:4000/loginUsuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosLogin),
       })
+      
       const result = await response.json()
-      console.log("Respuesta del servidor:", result)
+      console.log("📥 LOGIN - Respuesta del servidor:", result)
+      
       if (result.validar === true) {
+        console.log("💾 LOGIN - Guardando ID en sessionStorage:", result.id)
+        console.log("💾 LOGIN - Tipo del ID:", typeof result.id)
+        
+        // Guardar el ID
         sessionStorage.setItem("jugadorId", result.id)
-        router.push("/inicio");
+        
+        // Verificar que se guardó correctamente
+        const verificar = sessionStorage.getItem("jugadorId")
+        console.log("✅ LOGIN - ID verificado en sessionStorage:", verificar)
+        console.log("✅ LOGIN - Tipo del ID verificado:", typeof verificar)
+        
+        // Pequeño delay antes de redirigir
+        setTimeout(() => {
+          console.log("🚀 LOGIN - Redirigiendo a /inicio")
+          router.push("/inicio")
+        }, 100)
+        
       } else {
-        showModal("Error", result.message || "Credenciales incorrectas");
+        console.log("❌ LOGIN - Credenciales incorrectas")
+        showModal("Error", result.message || "Credenciales incorrectas")
       }
     } catch (error) {
-      console.error(error);
-      showModal("Error", "Hubo un problema con la conexión al servidor.");
+      console.error("❌ LOGIN - Error:", error)
+      showModal("Error", "Hubo un problema con la conexión al servidor.")
     }
   }
 
@@ -70,7 +90,7 @@ export default function RegistroYLogin() {
       contraseña,
     };
 
-    console.log("Datos a enviar:", datosRegistro)
+    console.log("📤 REGISTRO - Datos a enviar:", datosRegistro)
 
     try {
       const response = await fetch("http://localhost:4000/registroUsuario", {
@@ -79,10 +99,10 @@ export default function RegistroYLogin() {
         body: JSON.stringify(datosRegistro),
       });
 
-      console.log("Status de la respuesta:", response.status)
+      console.log("📥 REGISTRO - Status:", response.status)
 
       const result = await response.json();
-      console.log("Resultado completo:", result);
+      console.log("📥 REGISTRO - Resultado:", result);
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
@@ -91,7 +111,7 @@ export default function RegistroYLogin() {
         showModal("Error", result.message || "No se pudo registrar el usuario");
       }
     } catch (error) {
-      console.error("Error completo:", error);
+      console.error("❌ REGISTRO - Error:", error);
       showModal("Error", "Hubo un problema con la conexión al servidor.");
     }
   }
