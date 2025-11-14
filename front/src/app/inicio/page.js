@@ -12,18 +12,18 @@ export default function MenuPrincipal() {
   const router = useRouter()
   const { socket } = useSocket()
 
-  // Estados principales
+  
   const [mostrarReglas, setMostrarReglas] = useState(false)
   const [codigo, setCodigo] = useState("")
   const [inLobby, setInLobby] = useState(false)
   const [jugadores, setJugadores] = useState([])
 
-  // Estados para popups
+  
   const [isPopUpGameOpen, setIsPopUpGameOpen] = useState(false)
   const [isCreateRoomOpen, setCreateRoomOpen] = useState(false)
   const [isJoinRoomOpen, setJoinRoomOpen] = useState(false)
 
-  // VERIFICAR ID DEL JUGADOR AL CARGAR
+  
   useEffect(() => {
     const jugadorId = sessionStorage.getItem("jugadorId")
     console.log("MENU - Verificando jugadorId:", jugadorId)
@@ -38,7 +38,7 @@ export default function MenuPrincipal() {
     console.log("MENU - jugadorId válido:", jugadorId)
   }, [router])
 
-  // Configurar listeners de socket
+  
   useEffect(() => {
     if (!socket) {
       console.log("MENU - Esperando conexión de socket...")
@@ -91,7 +91,7 @@ export default function MenuPrincipal() {
     }
   }, [socket, router])
 
-  // Función para crear sala
+  
   const createRoom = () => {
     if (!socket) {
       console.error("CREAR SALA - No hay socket")
@@ -103,7 +103,7 @@ export default function MenuPrincipal() {
     socket.emit("createRoom", {})
   }
 
-  // Función para unirse a sala
+  
   const joinRoom = () => {
     if (!codigo || codigo.trim() === "") {
       console.error("UNIRSE SALA - Código vacío")
@@ -123,19 +123,15 @@ export default function MenuPrincipal() {
     socket.emit("joinRoom", { code: codigoLimpio })
   }
 
-  // ✨ NUEVA FUNCIÓN: Salir del lobby
+  
   const salirDelLobby = () => {
     console.log("MENU - Saliendo del lobby")
-    // Opcional: emitir evento al servidor para que el jugador salga
-    // if (socket) {
-    //   socket.emit("leaveRoom", { code: codigo })
-    // }
     setInLobby(false)
     setCodigo("")
     setJugadores([])
   }
 
-  // Si está en el lobby, mostrar componente Lobby
+  
   if (inLobby) {
     return (
       <Lobby
@@ -147,7 +143,7 @@ export default function MenuPrincipal() {
     )
   }
 
-  // Renderizar menú principal
+  
   return (
     <div className={styles.menuContainer}>
       <div className={styles.backgroundImage}>
@@ -189,7 +185,6 @@ export default function MenuPrincipal() {
         </div>
       )}
 
-      {/* Popup: elegir crear o unirse */}
       <Popup
         open={isPopUpGameOpen}
         onClose={() => setIsPopUpGameOpen(false)}
@@ -229,7 +224,6 @@ export default function MenuPrincipal() {
         </div>
       </Popup>
 
-      {/* Popup: crear sala */}
       <Popup
         open={isCreateRoomOpen}
         onClose={() => setCreateRoomOpen(false)}
@@ -255,7 +249,7 @@ export default function MenuPrincipal() {
         </div>
       </Popup>
 
-      {/* Popup: unirse a sala */}
+      
       <Popup
         open={isJoinRoomOpen}
         onClose={() => setJoinRoomOpen(false)}

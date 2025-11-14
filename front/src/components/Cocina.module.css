@@ -11,7 +11,7 @@
     padding: 20px;
 }
 
-/* ========== BOTONES SUPERIORES ========== */
+
 .topButtons {
     display: flex;
     justify-content: center;
@@ -70,7 +70,7 @@
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* ========== BARRA DE INGREDIENTES SUPERIOR ========== */
+
 .ingredientsBox {
     width: 100%;
     max-width: 1200px;
@@ -141,7 +141,7 @@
     text-transform: uppercase;
 }
 
-/* ========== ÁREA PRINCIPAL ========== */
+
 .mainArea {
     flex: 1;
     display: flex;
@@ -160,7 +160,7 @@
     flex-wrap: wrap;
 }
 
-/* ========== ETIQUETAS ========== */
+
 .label {
     position: absolute;
     top: -15px;
@@ -178,7 +178,7 @@
     white-space: nowrap;
 }
 
-/* ========== PARRILLA DE CARNES (IZQUIERDA) ========== */
+
 .pattiesContainer {
     width: 320px;
     position: relative;
@@ -240,7 +240,7 @@
     visibility: hidden;
 }
 
-/* ========== BANDEJA DE PANES (CENTRO) ========== */
+
 .bunsContainer {
     width: 360px;
     position: relative;
@@ -303,7 +303,7 @@
     visibility: hidden;
 }
 
-/* ========== TABLA DE CORTAR (DERECHA) ========== */
+
 .cuttingBoard {
     width: 360px;
     position: relative;
@@ -324,7 +324,7 @@
     padding: 20px;
 }
 
-/* Efecto de vetas de madera */
+
 .boardSurface::before {
     content: '';
     position: absolute;
@@ -369,7 +369,7 @@
     padding: 20px;
 }
 
-/* ========== RESPONSIVE ========== */
+
 @media (max-width: 1200px) {
     .cookingZone {
         flex-direction: column;

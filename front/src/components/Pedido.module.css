@@ -28,7 +28,7 @@
   position: relative;
 }
 
-/* Flecha del bocadillo apuntando hacia abajo */
+
 .dialogBubble::after {
   content: '';
   position: absolute;
@@ -63,7 +63,7 @@
   font-weight: 500;
 }
 
-/* Contenedor de botones - ABAJO DEL TODO */
+
 .btns {
   position: fixed;
   bottom: 30px;
@@ -76,9 +76,9 @@
   z-index: 100;
 }
 
-/* Estilo del botón OK */
+
 .bake {
-  background-color: #db6e15; /* Azul principal */
+  background-color: #db6e15; 
   color: #ffffff;
   border: none;
   border-radius: 50px;
@@ -93,15 +93,15 @@
   letter-spacing: 2px;
 }
 
-/* Efecto hover */
+
 .bake:hover {
-  background-color: #f17f21; /* Azul más claro al pasar el mouse */
+  background-color: #f17f21; 
   transform: scale(1.08);
   box-shadow: 0 0 25px #c47432(0, 180, 216, 0.6);
 }
 
-/* Efecto al presionar */
+
 .bake:active {
   transform: scale(0.96);
-  background-color: #e96e09; /* Azul más oscuro al hacer clic */
+  background-color: #e96e09; 
 }

@@ -149,9 +149,7 @@ app.put('/admin/jugadores/:id', async function (req, res) {
 io.on("connection", async (socket) => {
     console.log('🔌 Usuario conectado:', socket.id);
 
-    // ==========================================
-    // AUTENTICACIÓN
-    // ==========================================
+    
     const jugadorId = socket.handshake.query.jugadorId;
     console.log("Verificando jugador:", jugadorId);
 
@@ -189,9 +187,7 @@ io.on("connection", async (socket) => {
         return;
     }
 
-    // ==========================================
-    // CREAR SALA
-    // ==========================================
+    
     socket.on("createRoom", async () => {
         try {
             const id_jugador = sesionesActivas.get(socket.id);
@@ -207,14 +203,14 @@ io.on("connection", async (socket) => {
             const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
             console.log("🎲 createRoom - Código generado:", codigo);
 
-            // ✅ Insertar sala (solo codigo)
+            
             const queryRoom = `INSERT INTO Juegos (codigo) VALUES ('${codigo}')`;
             const result = await realizarQuery(queryRoom);
             const id_juegos = result.insertId;
 
             console.log("createRoom - id_juegos insertado:", id_juegos);
 
-            // ✅ Insertar jugador en la sala (EL PRIMERO ES EL HOST)
+            
             const queryJugador = `
                 INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_resultado)
                 VALUES (${id_jugador}, ${id_juegos}, NULL)
@@ -223,11 +219,11 @@ io.on("connection", async (socket) => {
 
             console.log("createRoom - Jugador insertado como HOST");
 
-            // Unir socket a la sala
+            
             socket.join(codigo);
             console.log("createRoom - Socket unido a sala:", codigo);
 
-            // ✅ Obtener jugadores - EL HOST ES EL PRIMER JUGADOR
+            
             const jugadores = await realizarQuery(`
                 SELECT 
                     j.id_jugador,
@@ -250,7 +246,7 @@ io.on("connection", async (socket) => {
             console.log("- Contenido:", JSON.stringify(jugadores, null, 2));
             console.log("- Código de sala:", codigo);
 
-            // Emitir eventos
+            
             socket.emit("roomCreated", { code: codigo, id_juegos });
             io.to(codigo).emit("updateJugadores", jugadores);
 
@@ -262,9 +258,7 @@ io.on("connection", async (socket) => {
         }
     });
 
-    // ==========================================
-    // UNIRSE A SALA
-    // ==========================================
+    
     socket.on("joinRoom", async (data) => {
         try {
             const { code } = data;
@@ -284,7 +278,7 @@ io.on("connection", async (socket) => {
 
             console.log("joinRoom - Jugador:", id_jugador, "Código:", code);
 
-            // Verificar que la sala existe
+            
             const sala = await realizarQuery(`
                 SELECT id_juegos FROM Juegos WHERE codigo = '${code}'
             `);
@@ -297,7 +291,7 @@ io.on("connection", async (socket) => {
 
             const id_juegos = sala[0].id_juegos;
 
-            // Verificar que no esté llena
+           
             const jugadoresActuales = await realizarQuery(`
                 SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juegos = ${id_juegos}
             `);
@@ -308,7 +302,7 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            // Verificar que no esté ya en la sala
+            
             const yaEnSala = await realizarQuery(`
                 SELECT * FROM JugadoresJuego 
                 WHERE id_juegos = ${id_juegos} AND id_jugador = ${id_jugador}
@@ -320,18 +314,18 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            // Insertar jugador
+            
             const queryJugador = `
                 INSERT INTO JugadoresJuego (id_jugador, id_juegos, id_resultado)
                 VALUES (${id_jugador}, ${id_juegos}, NULL)
             `;
             await realizarQuery(queryJugador);
 
-            // Unir socket a la sala
+            
             socket.join(code);
             console.log("joinRoom - Socket unido a sala:", code);
 
-            // ✅ Obtener jugadores actualizados
+           
             const jugadores = await realizarQuery(`
                 SELECT 
                     j.id_jugador,
@@ -363,9 +357,7 @@ io.on("connection", async (socket) => {
         }
     });
 
-    // ==========================================
-    // INICIAR JUEGO
-    // ==========================================
+   
     socket.on("startGame", async (data) => {
         try {
             const { code } = data;
@@ -379,7 +371,6 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            // Verificar que la sala existe
             const sala = await realizarQuery(`
                 SELECT id_juegos FROM Juegos WHERE codigo = '${code}'
             `);
@@ -392,7 +383,6 @@ io.on("connection", async (socket) => {
 
             const id_juegos = sala[0].id_juegos;
 
-            // Verificar que hay 2 jugadores
             const jugadoresEnSala = await realizarQuery(`
                 SELECT COUNT(*) as total FROM JugadoresJuego WHERE id_juegos = ${id_juegos}
             `);
@@ -403,7 +393,6 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            // ✅ Verificar que quien inicia es el HOST (el primero que se unió)
             const hostQuery = await realizarQuery(`
                 SELECT id_jugador 
                 FROM JugadoresJuego 
@@ -419,9 +408,9 @@ io.on("connection", async (socket) => {
                 return;
             }
 
-            console.log("✅ startGame - Host verificado, iniciando juego");
+            console.log("startGame - Host verificado, iniciando juego");
 
-            // Emitir a TODOS los jugadores
+
             io.to(code).emit("gameStart", {
                 code: code,
                 id_juegos: id_juegos
@@ -435,9 +424,7 @@ io.on("connection", async (socket) => {
         }
     });
 
-    // ==========================================
-    // DESCONEXIÓN
-    // ==========================================
+   
     socket.on("disconnect", () => {
         const jugadorId = sesionesActivas.get(socket.id);
         console.log("🔌 Usuario desconectado:", socket.id, "Jugador:", jugadorId);

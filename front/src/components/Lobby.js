@@ -10,7 +10,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
   const [esHost, setEsHost] = useState(false)
   const [copiado, setCopiado] = useState(false)
 
-  // Obtener el ID del jugador al cargar
+  
   useEffect(() => {
     const jugadorId = sessionStorage.getItem("jugadorId")
     console.log("🎮 LOBBY - Mi ID:", jugadorId)
@@ -19,7 +19,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }, [])
 
-  // Verificar si soy el host
+  
   useEffect(() => {
     console.log("🔍 LOBBY - Verificando host. Mi ID:", miId, "Jugadores:", jugadores)
     
@@ -35,7 +35,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }, [miId, jugadores])
 
-  // Listener para cuando el juego inicia
+  
   useEffect(() => {
     if (!socket) return
 
@@ -51,7 +51,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }, [socket, router])
 
-  // Función para iniciar el juego
+  
   const iniciarJuego = () => {
     console.log("LOBBY - Intentando iniciar juego...")
     console.log("LOBBY - ¿Soy host?:", esHost)
@@ -75,7 +75,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }
 
-  // Función para copiar código
+  
   const copiarCodigo = async () => {
     try {
       await navigator.clipboard.writeText(codigo)
@@ -124,7 +124,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
               </div>
             ))}
             
-            {/* Mostrar slots vacíos */}
+            
             {jugadores.length < 2 && (
               <div className={`${styles.jugadorItem} ${styles.emptySlot}`}>
                 <span className={styles.jugadorNombre}>Esperando jugador...</span>

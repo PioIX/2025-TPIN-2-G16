@@ -6,7 +6,7 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Obtener el ID del jugador desde sessionStorage
+    
     const jugadorId = sessionStorage.getItem("jugadorId");
     
     if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
@@ -16,7 +16,7 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
 
     console.log("🔌 useSocket - Conectando con jugadorId:", jugadorId);
 
-    // Crear conexión enviando el ID como query param
+    
     const socketIo = io(serverUrl, {
       ...options,
       query: {
@@ -26,7 +26,7 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
       reconnection: true
     });
 
-    // Eventos de conexión
+    
     socketIo.on('connect', () => {
       setIsConnected(true);
       console.log('WebSocket conectado:', socketIo.id);
@@ -44,7 +44,7 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
 
     setSocket(socketIo);
 
-    // Limpiar al desmontar
+    
     return () => {
       socketIo.disconnect();
     };

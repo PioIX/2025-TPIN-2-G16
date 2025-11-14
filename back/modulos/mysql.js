@@ -24,7 +24,7 @@ exports.realizarQuery = async function (queryString) {
         connection = await mySql.createConnection(SQL_CONFIGURATION_DATA);
         returnObject = await connection.execute(queryString);
         
-        // ✅ Validar que returnObject existe antes de retornar
+        
         if (!returnObject || !returnObject[0]) {
             console.error("Query no retornó datos:", queryString);
             return [];
@@ -34,7 +34,7 @@ exports.realizarQuery = async function (queryString) {
     } catch(err) {
         console.error("Error en realizarQuery:", err);
         console.error("Query que falló:", queryString);
-        return []; // ✅ Retornar array vacío en vez de undefined
+        return []; 
     } finally {
         if(connection && connection.end) connection.end();
     }
