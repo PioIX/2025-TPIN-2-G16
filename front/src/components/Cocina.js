@@ -190,10 +190,10 @@ export default function Cocina({onGoToEntrega}) {
             {/* Botones superiores */}
             <div className={styles.topButtons}>
                 <button className={styles.deliverBtn} onClick={handleGoToEntrega}>
-                    🚚 ENTREGAR
+                    ENTREGAR
                 </button>
                 <button className={styles.resetBtn} onClick={handleResetHamburger}>
-                    🔄 REINICIAR
+                    REINICIAR
                 </button>
             </div>
             
