@@ -10,7 +10,7 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
     const jugadorId = sessionStorage.getItem("jugadorId");
     
     if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
-      console.error("❌ useSocket - No hay jugadorId válido");
+      console.error(" useSocket - No hay jugadorId válido");
       return;
     }
 
@@ -29,8 +29,8 @@ const useSocket = (options = {}, serverUrl = "http://localhost:4000") => {
     // Eventos de conexión
     socketIo.on('connect', () => {
       setIsConnected(true);
-      console.log('✅ WebSocket conectado:', socketIo.id);
-      console.log('✅ Autenticado como jugador:', jugadorId);
+      console.log('WebSocket conectado:', socketIo.id);
+      console.log('Autenticado como jugador:', jugadorId);
     });
 
     socketIo.on('disconnect', () => {

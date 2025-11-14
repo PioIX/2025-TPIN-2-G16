@@ -153,10 +153,10 @@ io.on("connection", async (socket) => {
     // AUTENTICACIÓN
     // ==========================================
     const jugadorId = socket.handshake.query.jugadorId;
-    console.log("🔍 Verificando jugador:", jugadorId);
+    console.log("Verificando jugador:", jugadorId);
 
     if (!jugadorId || jugadorId === "null" || jugadorId === "undefined") {
-        console.error("❌ Conexión rechazada: No hay jugadorId");
+        console.error("Conexión rechazada: No hay jugadorId");
         socket.emit("errorAuth", "Debes iniciar sesión primero");
         socket.disconnect();
         return;
@@ -168,14 +168,14 @@ io.on("connection", async (socket) => {
         `);
 
         if (jugadorExiste.length === 0) {
-            console.error("❌ Jugador no encontrado en BD:", jugadorId);
+            console.error("Jugador no encontrado en BD:", jugadorId);
             socket.emit("errorAuth", "Usuario no válido");
             socket.disconnect();
             return;
         }
 
         sesionesActivas.set(socket.id, parseInt(jugadorId));
-        console.log("✅ Sesión autenticada:", socket.id, "-> Jugador ID:", jugadorId);
+        console.log("Sesión autenticada:", socket.id, "-> Jugador ID:", jugadorId);
 
         socket.emit("authenticated", {
             jugadorId: parseInt(jugadorId),
@@ -183,7 +183,7 @@ io.on("connection", async (socket) => {
         });
 
     } catch (err) {
-        console.error("❌ Error verificando jugador:", err);
+        console.error(" Error verificando jugador:", err);
         socket.emit("errorAuth", "Error de autenticación");
         socket.disconnect();
         return;
@@ -197,12 +197,12 @@ io.on("connection", async (socket) => {
             const id_jugador = sesionesActivas.get(socket.id);
 
             if (!id_jugador) {
-                console.error("❌ createRoom - No hay sesión activa");
+                console.error("createRoom - No hay sesión activa");
                 socket.emit("errorRoom", "Debes iniciar sesión primero");
                 return;
             }
 
-            console.log("🏗️ createRoom - Jugador ID:", id_jugador);
+            console.log("createRoom - Jugador ID:", id_jugador);
 
             const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
             console.log("🎲 createRoom - Código generado:", codigo);
@@ -212,7 +212,7 @@ io.on("connection", async (socket) => {
             const result = await realizarQuery(queryRoom);
             const id_juegos = result.insertId;
 
-            console.log("✅ createRoom - id_juegos insertado:", id_juegos);
+            console.log("createRoom - id_juegos insertado:", id_juegos);
 
             // ✅ Insertar jugador en la sala (EL PRIMERO ES EL HOST)
             const queryJugador = `
@@ -221,11 +221,11 @@ io.on("connection", async (socket) => {
             `;
             await realizarQuery(queryJugador);
 
-            console.log("✅ createRoom - Jugador insertado como HOST");
+            console.log("createRoom - Jugador insertado como HOST");
 
             // Unir socket a la sala
             socket.join(codigo);
-            console.log("✅ createRoom - Socket unido a sala:", codigo);
+            console.log("createRoom - Socket unido a sala:", codigo);
 
             // ✅ Obtener jugadores - EL HOST ES EL PRIMER JUGADOR
             const jugadores = await realizarQuery(`
@@ -245,7 +245,7 @@ io.on("connection", async (socket) => {
                 ORDER BY jj.id_jugadorjuego ASC
             `);
 
-            console.log("🔍 DEBUG - Jugadores que se van a emitir:");
+            console.log("DEBUG - Jugadores que se van a emitir:");
             console.log("- Cantidad:", jugadores.length);
             console.log("- Contenido:", JSON.stringify(jugadores, null, 2));
             console.log("- Código de sala:", codigo);
@@ -254,10 +254,10 @@ io.on("connection", async (socket) => {
             socket.emit("roomCreated", { code: codigo, id_juegos });
             io.to(codigo).emit("updateJugadores", jugadores);
 
-            console.log("✅ createRoom - Eventos emitidos correctamente");
+            console.log("createRoom - Eventos emitidos correctamente");
 
         } catch (err) {
-            console.error("❌ createRoom - Error:", err);
+            console.error("createRoom - Error:", err);
             socket.emit("errorRoom", "No se pudo crear la sala");
         }
     });
@@ -271,18 +271,18 @@ io.on("connection", async (socket) => {
             const id_jugador = sesionesActivas.get(socket.id);
 
             if (!id_jugador) {
-                console.error("❌ joinRoom - No hay sesión activa");
+                console.error("joinRoom - No hay sesión activa");
                 socket.emit("errorRoom", "Debes iniciar sesión primero");
                 return;
             }
 
             if (!code) {
-                console.error("❌ joinRoom - No se recibió código");
+                console.error("joinRoom - No se recibió código");
                 socket.emit("errorRoom", "Código de sala requerido");
                 return;
             }
 
-            console.log("🚪 joinRoom - Jugador:", id_jugador, "Código:", code);
+            console.log("joinRoom - Jugador:", id_jugador, "Código:", code);
 
             // Verificar que la sala existe
             const sala = await realizarQuery(`
@@ -290,7 +290,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (sala.length === 0) {
-                console.error("❌ joinRoom - Sala no encontrada");
+                console.error("joinRoom - Sala no encontrada");
                 socket.emit("errorRoom", "La sala no existe");
                 return;
             }
@@ -303,7 +303,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (jugadoresActuales[0].total >= 2) {
-                console.error("❌ joinRoom - Sala llena");
+                console.error("joinRoom - Sala llena");
                 socket.emit("errorRoom", "La sala está llena");
                 return;
             }
@@ -315,7 +315,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (yaEnSala.length > 0) {
-                console.error("❌ joinRoom - Ya estás en esta sala");
+                console.error("joinRoom - Ya estás en esta sala");
                 socket.emit("errorRoom", "Ya estás en esta sala");
                 return;
             }
@@ -329,7 +329,7 @@ io.on("connection", async (socket) => {
 
             // Unir socket a la sala
             socket.join(code);
-            console.log("✅ joinRoom - Socket unido a sala:", code);
+            console.log("joinRoom - Socket unido a sala:", code);
 
             // ✅ Obtener jugadores actualizados
             const jugadores = await realizarQuery(`
@@ -355,10 +355,10 @@ io.on("connection", async (socket) => {
             socket.emit("roomJoined", { code: code, id_juegos });
             io.to(code).emit("updateJugadores", jugadores);
 
-            console.log("✅ joinRoom - Eventos emitidos correctamente");
+            console.log("joinRoom - Eventos emitidos correctamente");
 
         } catch (err) {
-            console.error("❌ joinRoom - Error:", err);
+            console.error("joinRoom - Error:", err);
             socket.emit("errorRoom", "No se pudo unir a la sala");
         }
     });
@@ -371,10 +371,10 @@ io.on("connection", async (socket) => {
             const { code } = data;
             const id_jugador = sesionesActivas.get(socket.id);
 
-            console.log("🎮 startGame - Código:", code, "Jugador:", id_jugador);
+            console.log("startGame - Código:", code, "Jugador:", id_jugador);
 
             if (!code) {
-                console.error("❌ startGame - No se recibió código");
+                console.error("startGame - No se recibió código");
                 socket.emit("errorRoom", "Código de sala requerido");
                 return;
             }
@@ -385,7 +385,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (sala.length === 0) {
-                console.error("❌ startGame - Sala no encontrada");
+                console.error("startGame - Sala no encontrada");
                 socket.emit("errorRoom", "La sala no existe");
                 return;
             }
@@ -398,7 +398,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (jugadoresEnSala[0].total < 2) {
-                console.error("❌ startGame - Faltan jugadores");
+                console.error("startGame - Faltan jugadores");
                 socket.emit("errorRoom", "Se necesitan 2 jugadores para iniciar");
                 return;
             }
@@ -413,7 +413,7 @@ io.on("connection", async (socket) => {
             `);
 
             if (hostQuery.length === 0 || hostQuery[0].id_jugador !== id_jugador) {
-                console.error("❌ startGame - Solo el host puede iniciar");
+                console.error("startGame - Solo el host puede iniciar");
                 console.log("Host esperado:", hostQuery[0]?.id_jugador, "Recibido:", id_jugador);
                 socket.emit("errorRoom", "Solo el host puede iniciar el juego");
                 return;
@@ -427,10 +427,10 @@ io.on("connection", async (socket) => {
                 id_juegos: id_juegos
             });
 
-            console.log("✅ startGame - Juego iniciado en sala:", code);
+            console.log("startGame - Juego iniciado en sala:", code);
 
         } catch (err) {
-            console.error("❌ startGame - Error:", err);
+            console.error("startGame - Error:", err);
             socket.emit("errorRoom", "No se pudo iniciar el juego");
         }
     });

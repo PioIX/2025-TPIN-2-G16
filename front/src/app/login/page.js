@@ -34,7 +34,7 @@ export default function RegistroYLogin() {
     }
     
     try {
-      console.log("📤 LOGIN - Enviando datos:", datosLogin)
+      console.log("LOGIN - Enviando datos:", datosLogin)
       
       const response = await fetch("http://localhost:4000/loginUsuario", {
         method: "POST",
@@ -43,19 +43,19 @@ export default function RegistroYLogin() {
       })
       
       const result = await response.json()
-      console.log("📥 LOGIN - Respuesta del servidor:", result)
+      console.log("LOGIN - Respuesta del servidor:", result)
       
       if (result.validar === true) {
-        console.log("💾 LOGIN - Guardando ID en sessionStorage:", result.id)
-        console.log("💾 LOGIN - Tipo del ID:", typeof result.id)
+        console.log("LOGIN - Guardando ID en sessionStorage:", result.id)
+        console.log("LOGIN - Tipo del ID:", typeof result.id)
         
         // Guardar el ID
         sessionStorage.setItem("jugadorId", result.id)
         
         // Verificar que se guardó correctamente
         const verificar = sessionStorage.getItem("jugadorId")
-        console.log("✅ LOGIN - ID verificado en sessionStorage:", verificar)
-        console.log("✅ LOGIN - Tipo del ID verificado:", typeof verificar)
+        console.log("LOGIN - ID verificado en sessionStorage:", verificar)
+        console.log("LOGIN - Tipo del ID verificado:", typeof verificar)
         
         // Pequeño delay antes de redirigir
         setTimeout(() => {
@@ -67,11 +67,11 @@ export default function RegistroYLogin() {
         }, 100)
         
       } else {
-        console.log("❌ LOGIN - Credenciales incorrectas")
+        console.log("LOGIN - Credenciales incorrectas")
         showModal("Error", result.message || "Credenciales incorrectas")
       }
     } catch (error) {
-      console.error("❌ LOGIN - Error:", error)
+      console.error("LOGIN - Error:", error)
       showModal("Error", "Hubo un problema con la conexión al servidor.")
     }
   }
@@ -93,7 +93,7 @@ export default function RegistroYLogin() {
       contraseña,
     };
 
-    console.log("📤 REGISTRO - Datos a enviar:", datosRegistro)
+    console.log("REGISTRO - Datos a enviar:", datosRegistro)
 
     try {
       const response = await fetch("http://localhost:4000/registroUsuario", {
@@ -102,10 +102,10 @@ export default function RegistroYLogin() {
         body: JSON.stringify(datosRegistro),
       });
 
-      console.log("📥 REGISTRO - Status:", response.status)
+      console.log("REGISTRO - Status:", response.status)
 
       const result = await response.json();
-      console.log("📥 REGISTRO - Resultado:", result);
+      console.log("REGISTRO - Resultado:", result);
 
       if (result.res === true) {
         showModal("Éxito", "¡Usuario registrado correctamente!");
@@ -114,7 +114,7 @@ export default function RegistroYLogin() {
         showModal("Error", result.message || "No se pudo registrar el usuario");
       }
     } catch (error) {
-      console.error("❌ REGISTRO - Error:", error);
+      console.error("REGISTRO - Error:", error);
       showModal("Error", "Hubo un problema con la conexión al servidor.");
     }
   }

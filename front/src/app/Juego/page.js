@@ -18,7 +18,7 @@ export default function JuegoContent() {
   const [currentClienteIndex, setCurrentClienteIndex] = useState(0);
   const [juegoFinished, setJuegoFinished] = useState(false);
 
-  // ⏱️ Sistema de Timer
+  // Sistema de Timer
   const [timerStarted, setTimerStarted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [finalTime, setFinalTime] = useState(0);
@@ -51,15 +51,15 @@ export default function JuegoContent() {
     setClientes(shuffled);
   }, []);
 
-  // ⏱️ Iniciar timer cuando se muestra el PRIMER pedido
+  //  Iniciar timer cuando se muestra el PRIMER pedido
   useEffect(() => {
     if (showPedido && !timerStarted && currentClienteIndex === 0) {
-      console.log("🕐 Timer iniciado - Primer pedido cargado");
+      console.log("Timer iniciado - Primer pedido cargado");
       startTimer();
     }
   }, [showPedido, timerStarted, currentClienteIndex]);
 
-  // ⏱️ Funciones del Timer
+  //  Funciones del Timer
   const startTimer = () => {
     if (timerIntervalRef.current) return;
 
@@ -75,7 +75,7 @@ export default function JuegoContent() {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
-      console.log("⏹️ Timer detenido");
+      console.log("⏹Timer detenido");
     }
   };
 
@@ -117,7 +117,7 @@ export default function JuegoContent() {
     const nextIndex = currentClienteIndex + 1;
 
     if (nextIndex >= clientes.length) {
-      console.log("🏁 ¡Juego terminado!");
+      console.log(" ¡Juego terminado!");
       stopTimer();
       setFinalTime(elapsedTime);
       setJuegoFinished(true);
@@ -165,7 +165,7 @@ export default function JuegoContent() {
           textAlign: 'center',
           marginBottom: '40px'
         }}>
-          🎉 ¡Juego Completado! 🎉
+           ¡Juego Completado! 
         </h1>
 
         <div style={{
@@ -231,7 +231,7 @@ export default function JuegoContent() {
           }}
           onClick={() => router.push('/login')}
         >
-          🏠 Volver al Inicio
+          Volver al Inicio
         </button>
       </div>
     );
