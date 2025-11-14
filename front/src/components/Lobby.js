@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import styles from './Lobby.module.css'
 
 export default function Lobby({ codigo, socket, jugadores }) {
   const router = useRouter()
@@ -53,9 +52,9 @@ export default function Lobby({ codigo, socket, jugadores }) {
 
   
   const iniciarJuego = () => {
-    console.log("LOBBY - Intentando iniciar juego...")
-    console.log("LOBBY - ¿Soy host?:", esHost)
-    console.log("LOBBY - Jugadores:", jugadores.length)
+    console.log("🚀 LOBBY - Intentando iniciar juego...")
+    console.log("🔍 LOBBY - ¿Soy host?:", esHost)
+    console.log("🔍 LOBBY - Jugadores:", jugadores.length)
     
     if (!esHost) {
       alert("Solo el host puede iniciar el juego")
@@ -68,14 +67,30 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
 
     if (socket) {
-      console.log("LOBBY - Emitiendo startGame con código:", codigo)
+      console.log("📤 LOBBY - Emitiendo startGame con código:", codigo)
       socket.emit("startGame", { code: codigo })
     } else {
-      console.error("LOBBY - No hay socket disponible")
+      console.error("❌ LOBBY - No hay socket disponible")
     }
   }
 
-  
+  // Función para salir de la sala
+  const salirDeLaSala = () => {
+    if (socket) {
+      console.log("🚪 LOBBY - Saliendo de la sala...")
+      socket.emit("leaveLobby", { code: codigo, playerId: miId })
+      socket.disconnect()
+    }
+    
+    // Limpiar sessionStorage
+    sessionStorage.removeItem("jugadorId")
+    sessionStorage.removeItem("codigoSala")
+    
+    // Volver a la página anterior o al inicio
+    router.push('/')
+  }
+
+  // Función para copiar código
   const copiarCodigo = async () => {
     try {
       await navigator.clipboard.writeText(codigo)
@@ -86,66 +101,105 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }
 
-  console.log("LOBBY - Renderizando. Jugadores:", jugadores.length, "esHost:", esHost)
+  console.log("🖼️ LOBBY - Renderizando. Jugadores:", jugadores.length, "esHost:", esHost)
 
   return (
-    <div className={styles.lobbyContainer}>
-      <div className={styles.lobbyCard}>
-        <h1 className={styles.title}>Sala de Espera</h1>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 w-full max-w-2xl border border-white/20">
         
-        <div className={styles.codigoContainer}>
-          <p className={styles.codigoLabel}>Código de sala:</p>
-          <div className={styles.codigoBox}>
-            <span className={styles.codigo}>{codigo}</span>
+        {/* Botón volver atrás */}
+        <button 
+          onClick={salirDeLaSala}
+          className="mb-6 flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+        >
+          <span className="text-2xl">←</span>
+          <span>Salir de la sala</span>
+        </button>
+
+        <h1 className="text-4xl font-bold text-white text-center mb-8">
+          🎮 Sala de Espera
+        </h1>
+        
+        <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
+          <p className="text-white/70 text-sm mb-2 text-center">Código de sala:</p>
+          <div className="flex items-center gap-3 justify-center">
+            <span className="text-3xl font-mono font-bold text-white bg-black/30 px-6 py-3 rounded-lg tracking-wider">
+              {codigo}
+            </span>
             <button 
               onClick={copiarCodigo}
-              className={`${styles.copyBtn} ${copiado ? styles.copied : ''}`}
+              className={`px-4 py-3 rounded-lg font-semibold transition-all ${
+                copiado 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
             >
-              {copiado ? 'Copiado' : 'Copiar'}
+              {copiado ? '✓ Copiado' : '📋 Copiar'}
             </button>
           </div>
-          <p className={styles.shareText}>Comparte este código con tu amigo</p>
+          <p className="text-white/60 text-sm mt-3 text-center">
+            Comparte este código con tu amigo
+          </p>
         </div>
 
-        <div className={styles.jugadoresContainer}>
-          <h2 className={styles.subtitle}>Jugadores ({jugadores.length}/2)</h2>
-          <div className={styles.jugadoresList}>
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Jugadores ({jugadores.length}/2)
+          </h2>
+          <div className="space-y-3">
             {jugadores.map((jugador) => (
-              <div key={jugador.id_jugador} className={styles.jugadorItem}>
-                <span className={styles.jugadorNombre}>
+              <div 
+                key={jugador.id_jugador} 
+                className="bg-white/10 rounded-lg p-4 flex items-center justify-between border border-white/10"
+              >
+                <span className="text-white font-semibold text-lg">
                   {jugador.nombre_usuario}
                 </span>
-                {jugador.esHost === 1 && (
-                  <span className={styles.hostBadge}>👑 Host</span>
-                )}
-                {jugador.id_jugador === miId && (
-                  <span className={styles.youBadge}>(Tú)</span>
-                )}
+                <div className="flex gap-2">
+                  {jugador.esHost === 1 && (
+                    <span className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-semibold border border-yellow-500/30">
+                      👑 Host
+                    </span>
+                  )}
+                  {jugador.id_jugador === miId && (
+                    <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm font-semibold border border-blue-500/30">
+                      Tú
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
             
             
             {jugadores.length < 2 && (
-              <div className={`${styles.jugadorItem} ${styles.emptySlot}`}>
-                <span className={styles.jugadorNombre}>Esperando jugador...</span>
+              <div className="bg-white/5 rounded-lg p-4 border-2 border-dashed border-white/20">
+                <span className="text-white/50 text-lg">
+                  ⏳ Esperando jugador...
+                </span>
               </div>
             )}
           </div>
         </div>
 
-        <div className={styles.actions}>
+        <div className="space-y-3">
           {esHost ? (
             <button 
               onClick={iniciarJuego} 
-              className={styles.startBtn}
               disabled={jugadores.length < 2}
+              className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
+                jugadores.length < 2
+                  ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+              }`}
             >
-              {jugadores.length < 2 ? 'Esperando jugadores...' : 'Iniciar Juego'}
+              {jugadores.length < 2 ? '⏳ Esperando jugadores...' : '🎮 Iniciar Juego'}
             </button>
           ) : (
-            <p className={styles.waitingText}>
-               Esperando a que el host inicie el juego...
-            </p>
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 text-center">
+              <p className="text-blue-200 font-semibold">
+                ⏳ Esperando a que el host inicie el juego...
+              </p>
+            </div>
           )}
         </div>
       </div>
