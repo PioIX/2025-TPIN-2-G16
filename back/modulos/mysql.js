@@ -26,14 +26,14 @@ exports.realizarQuery = async function (queryString) {
         
         // ✅ Validar que returnObject existe antes de retornar
         if (!returnObject || !returnObject[0]) {
-            console.error("❌ Query no retornó datos:", queryString);
+            console.error("Query no retornó datos:", queryString);
             return [];
         }
         
         return returnObject[0];
     } catch(err) {
-        console.error("❌ Error en realizarQuery:", err);
-        console.error("❌ Query que falló:", queryString);
+        console.error("Error en realizarQuery:", err);
+        console.error("Query que falló:", queryString);
         return []; // ✅ Retornar array vacío en vez de undefined
     } finally {
         if(connection && connection.end) connection.end();
