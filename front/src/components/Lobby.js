@@ -53,9 +53,9 @@ export default function Lobby({ codigo, socket, jugadores }) {
 
   // Función para iniciar el juego
   const iniciarJuego = () => {
-    console.log("🚀 LOBBY - Intentando iniciar juego...")
-    console.log("🔍 LOBBY - ¿Soy host?:", esHost)
-    console.log("🔍 LOBBY - Jugadores:", jugadores.length)
+    console.log("LOBBY - Intentando iniciar juego...")
+    console.log("LOBBY - ¿Soy host?:", esHost)
+    console.log("LOBBY - Jugadores:", jugadores.length)
     
     if (!esHost) {
       alert("Solo el host puede iniciar el juego")
@@ -68,10 +68,10 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
 
     if (socket) {
-      console.log("📤 LOBBY - Emitiendo startGame con código:", codigo)
+      console.log("LOBBY - Emitiendo startGame con código:", codigo)
       socket.emit("startGame", { code: codigo })
     } else {
-      console.error("❌ LOBBY - No hay socket disponible")
+      console.error("LOBBY - No hay socket disponible")
     }
   }
 
@@ -86,7 +86,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
     }
   }
 
-  console.log("🖼️ LOBBY - Renderizando. Jugadores:", jugadores.length, "esHost:", esHost)
+  console.log("LOBBY - Renderizando. Jugadores:", jugadores.length, "esHost:", esHost)
 
   return (
     <div className={styles.lobbyContainer}>
@@ -101,7 +101,7 @@ export default function Lobby({ codigo, socket, jugadores }) {
               onClick={copiarCodigo}
               className={`${styles.copyBtn} ${copiado ? styles.copied : ''}`}
             >
-              {copiado ? '✓ Copiado' : '📋 Copiar'}
+              {copiado ? 'Copiado' : 'Copiar'}
             </button>
           </div>
           <p className={styles.shareText}>Comparte este código con tu amigo</p>
@@ -140,11 +140,11 @@ export default function Lobby({ codigo, socket, jugadores }) {
               className={styles.startBtn}
               disabled={jugadores.length < 2}
             >
-              {jugadores.length < 2 ? '⏳ Esperando jugadores...' : '🎮 Iniciar Juego'}
+              {jugadores.length < 2 ? 'Esperando jugadores...' : 'Iniciar Juego'}
             </button>
           ) : (
             <p className={styles.waitingText}>
-              ⏳ Esperando a que el host inicie el juego...
+               Esperando a que el host inicie el juego...
             </p>
           )}
         </div>
