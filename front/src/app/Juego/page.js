@@ -54,7 +54,7 @@ export default function JuegoContent() {
   //  Iniciar timer cuando se muestra el PRIMER pedido
   useEffect(() => {
     if (showPedido && !timerStarted && currentClienteIndex === 0) {
-      console.log("🕐 Timer iniciado - Primer pedido cargado");
+      console.log("Timer iniciado - Primer pedido cargado");
       startTimer();
     }
   }, [showPedido, timerStarted, currentClienteIndex]);
@@ -75,7 +75,7 @@ export default function JuegoContent() {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
-      console.log("⏹️ Timer detenido");
+      console.log("⏹Timer detenido");
     }
   };
 

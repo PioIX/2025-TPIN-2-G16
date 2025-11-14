@@ -27,7 +27,7 @@ export default function AdminPage() {
         try {
             const res = await fetch(`${API_BASE}/admin/jugadores`);
             const datos = await res.json();
-            console.log("📥 ADMIN - Datos recibidos:", datos);
+            console.log("ADMIN - Datos recibidos:", datos);
 
             datos.success && setJugadores(datos.jugadores);
         } catch (err) {
