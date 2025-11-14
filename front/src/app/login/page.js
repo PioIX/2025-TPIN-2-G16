@@ -49,15 +49,15 @@ export default function RegistroYLogin() {
         console.log("LOGIN - Guardando ID en sessionStorage:", result.id)
         console.log("LOGIN - Tipo del ID:", typeof result.id)
         
-        // Guardar el ID
+        
         sessionStorage.setItem("jugadorId", result.id)
         
-        // Verificar que se guardó correctamente
+        
         const verificar = sessionStorage.getItem("jugadorId")
         console.log("LOGIN - ID verificado en sessionStorage:", verificar)
         console.log("LOGIN - Tipo del ID verificado:", typeof verificar)
         
-        // Pequeño delay antes de redirigir
+        
         setTimeout(() => {
           if (result.administrador === 1 || result.administrador === true) {
             router.push("/administrador")
@@ -121,7 +121,6 @@ export default function RegistroYLogin() {
 
   return (
     <div className={styles.container}>
-      {/* Hamburguesa de fondo */}
       <div className={styles.burgerContainer}>
         <div className={styles.burgerIcon}>
           <div className={styles.bunTop}></div>
@@ -133,7 +132,7 @@ export default function RegistroYLogin() {
         </div>
       </div>
 
-      {/* Formulario */}
+      
       <div className={styles.formCard}>
         <div className={styles.tabsContainer}>
           <button 
@@ -205,7 +204,6 @@ export default function RegistroYLogin() {
         </div>
       </div>
 
-      {/* Mensaje de notificación */}
       {mostrarMensaje && (
         <div className={styles.mensaje}>
           {textoMensaje}

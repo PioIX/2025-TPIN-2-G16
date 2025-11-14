@@ -13,12 +13,12 @@ export default function JuegoContent() {
   const [showCocina, setShowCocina] = useState(false);
   const [showEntrega, setShowEntrega] = useState(false);
 
-  // Sistema de personajes
+  
   const [clientes, setClientes] = useState([]);
   const [currentClienteIndex, setCurrentClienteIndex] = useState(0);
   const [juegoFinished, setJuegoFinished] = useState(false);
 
-  // Sistema de Timer
+  
   const [timerStarted, setTimerStarted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [finalTime, setFinalTime] = useState(0);
@@ -51,7 +51,7 @@ export default function JuegoContent() {
     setClientes(shuffled);
   }, []);
 
-  //  Iniciar timer cuando se muestra el PRIMER pedido
+  
   useEffect(() => {
     if (showPedido && !timerStarted && currentClienteIndex === 0) {
       console.log("Timer iniciado - Primer pedido cargado");
@@ -59,7 +59,7 @@ export default function JuegoContent() {
     }
   }, [showPedido, timerStarted, currentClienteIndex]);
 
-  //  Funciones del Timer
+  
   const startTimer = () => {
     if (timerIntervalRef.current) return;
 

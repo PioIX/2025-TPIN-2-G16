@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 
-/* Contenedor principal */
+
 .container {
   margin: 0;
   padding: 0;
@@ -16,7 +16,7 @@
   position: relative;
 }
 
-/* Canvas */
+
 .canvas {
   display: block;
   width: 100%;
@@ -28,7 +28,7 @@
   left: 0;
 }
 
-/* Bocadillo de diálogo */
+
 .dialogBubble {
   position: absolute;
   top: 15%;
@@ -62,7 +62,7 @@
   font-family: Arial, sans-serif;
 }
 
-/* Flecha del bocadillo */
+
 .bubbleArrow {
   position: absolute;
   bottom: -15px;
@@ -86,7 +86,6 @@
   border-top: 17px solid #333;
 }
 
-/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -117,7 +116,7 @@
   animation: fadeIn 0.5s ease-in;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .dialogBubble {
     left: 50%;
@@ -135,9 +134,7 @@
   }
 }
 
-/* ⏱️ ESTILOS DEL TIMER - Agregar al archivo page.module.css */
 
-/* Timer Display (arriba de la pantalla durante el juego) */
 .timerDisplay {
   position: fixed;
   top: 20px;
@@ -200,7 +197,6 @@
   font-weight: 600;
 }
 
-/* Responsive para el timer */
 @media (max-width: 768px) {
   .timerDisplay {
     top: 10px;

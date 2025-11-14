@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import styles from "./Cocina.module.css"
 
-//SECCIÓN DE LA COCINA DE HAMBURGUESAS
+
 export default function Cocina({onGoToEntrega}) {
     const ingredientsBox = [
         {id:1, name:"Pan Abajo", image:"/imagenesHamburguesa/PanAbajo.png", type: "base", size: 200},
@@ -25,7 +25,7 @@ export default function Cocina({onGoToEntrega}) {
     const canvasRef = useRef(null)
     const layerHeight = useRef(30)
 
-    // Configurar canvas cuando aparece la hamburguesa
+   
     useEffect(() => {
         if (activeHamburger && canvasRef.current) {
             const canvas = canvasRef.current
@@ -38,7 +38,7 @@ export default function Cocina({onGoToEntrega}) {
         }
     }, [activeHamburger])
 
-    // Redibujar hamburguesa cuando cambian las capas
+    
     useEffect(() => {
         if (activeHamburger && hamburgerLayers.length > 0) {
             redrawHamburger()
@@ -52,13 +52,13 @@ export default function Cocina({onGoToEntrega}) {
         const ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        // Calcular la altura total de la hamburguesa
+        
         const totalHeight = hamburgerLayers.length * layerHeight.current + 50
         
-        // Calcular offset para centrar verticalmente
+        
         const startY = Math.max(10, canvas.height - totalHeight)
 
-        // Dibujar cada capa desde abajo hacia arriba
+        
         hamburgerLayers.forEach((layer, index) => {
             if (layer.image.complete) {
                 const yPosition = startY + (hamburgerLayers.length - 1 - index) * layerHeight.current
@@ -82,7 +82,7 @@ export default function Cocina({onGoToEntrega}) {
         
         setActiveHamburger(true)
         
-        // Agregar pan de abajo como primera capa
+        
         addIngredientToHamburger(ingredientsBox[0])
     }
 
@@ -103,7 +103,7 @@ export default function Cocina({onGoToEntrega}) {
         newVisiblePatties[index] = false
         setVisiblePatties(newVisiblePatties)
         
-        // Agregar carne a la hamburguesa
+        
         addIngredientToHamburger(ingredientsBox[1])
     }
 
@@ -118,7 +118,7 @@ export default function Cocina({onGoToEntrega}) {
             return
         }
 
-        // Si es el pan de arriba, finalizar hamburguesa
+        
         if (ingredient.type === "top") {
             console.log(`Pan Arriba agregado - Hamburguesa finalizada`)
             addIngredientToHamburger(ingredient)
@@ -187,7 +187,6 @@ export default function Cocina({onGoToEntrega}) {
 
     return (
         <div className={styles.container}>
-            {/* Botones superiores */}
             <div className={styles.topButtons}>
                 <button className={styles.deliverBtn} onClick={handleGoToEntrega}>
                     ENTREGAR
@@ -197,7 +196,7 @@ export default function Cocina({onGoToEntrega}) {
                 </button>
             </div>
             
-            {/* Barra de ingredientes superior */}
+            
             <div className={styles.ingredientsBox}>
                 {ingredientsBox.slice(2, 8).map((ingredientBox) => (
                     <button 
@@ -215,7 +214,6 @@ export default function Cocina({onGoToEntrega}) {
 
             <div className={styles.mainArea}>
                 <div className={styles.cookingZone}>
-                    {/* Parrilla de carnes (IZQUIERDA) */}
                     <div className={styles.pattiesContainer}>
                         <div className={styles.label}>PARRILLA</div>
                         <div className={styles.pattiesGrid}>
@@ -230,7 +228,7 @@ export default function Cocina({onGoToEntrega}) {
                         </div>
                     </div>
 
-                    {/* Panes (CENTRO) */}
+                    
                     <div className={styles.bunsContainer}>
                         <div className={styles.label}>PANES</div>
                         <div className={styles.bunsGrid}>
@@ -245,7 +243,7 @@ export default function Cocina({onGoToEntrega}) {
                         </div>
                     </div>
 
-                    {/* Tabla de cortar (DERECHA) */}
+                    
                     <div className={styles.cuttingBoard}>
                         <div className={styles.label}>TABLA DE ARMADO</div>
                         <div className={styles.boardSurface}>
