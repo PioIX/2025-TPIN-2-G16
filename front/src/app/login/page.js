@@ -62,7 +62,7 @@ export default function RegistroYLogin() {
           if (result.administrador === 1 || result.administrador === true) {
             router.push("/administrador")
           } else {
-            router.push("/menu")
+            router.push("/inicio")
           }
         }, 100)
         
